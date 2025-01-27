@@ -38,13 +38,9 @@ function chargerPlayerSuccess(data, text, jqXHR) {
     cmbJoueurs.options.length = 0; // Clear existing options
     $(data).find("joueur").each(function () {
         var joueur = new Joueur();
-        joueur.setPk($(this).find("id").text());
         joueur.setNom($(this).find("nom").text());
         joueur.setPoints($(this).find("points").text());
-        cmbJoueurs.options[cmbJoueurs.options.length] = new Option(
-            joueur.getNom() + " (" + joueur.getPoints() + " points)",
-            JSON.stringify(joueur)
-        );
+        cmbJoueurs.options[cmbJoueurs.options.length] = new Option(joueur.toString(), JSON.stringify(joueur));
     });
 
 }
