@@ -16,7 +16,6 @@
         // A compléter....
         $equipes = getEquipes();
          
-        // Loop through each team and display it in the table
         foreach ($equipes as $index => $equipe) {
           echo "<tr>";
           echo "<td>" . ($index + 1) . "</td>";
