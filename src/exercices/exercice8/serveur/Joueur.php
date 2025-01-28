@@ -9,8 +9,4 @@ class Joueur {
         $this->nom = $nom;
         $this->points = $points;
     }
-
-    public function toXML() {
-        return "<joueur><id>{$this->id}</id><nom>{$this->nom}</nom><points>{$this->points}</points></joueur>";
-    }
 }

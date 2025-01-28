@@ -7,8 +7,4 @@ class Equipe {
         $this->id = $id;
         $this->nom = $nom;
     }
-
-    public function toXML() {
-        return "<equipe><id>{$this->id}</id><nom>{$this->nom}</nom></equipe>";
-    }
 }
