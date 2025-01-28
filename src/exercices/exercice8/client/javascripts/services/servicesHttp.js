@@ -15,7 +15,7 @@ var BASE_URL = "http://localhost/module-151-elif-mee/src/exercices/exercice8/ser
 function chargerTeam(successCallback, errorCallback) {
     $.ajax({
         type: "GET",
-        dataType: "xml",
+        dataType: "json",
         url: BASE_URL,
         data: 'action=equipe',
         success: successCallback,
@@ -33,7 +33,7 @@ function chargerTeam(successCallback, errorCallback) {
 function chargerPlayers(teamid, successCallback, errorCallback) {
     $.ajax({
         type: "GET",
-        dataType: "xml",
+        dataType: "json",
         url: BASE_URL,
         data: 'action=joueur&equipeId=' + teamid,
         success: successCallback,

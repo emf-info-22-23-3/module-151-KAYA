@@ -19,7 +19,7 @@ function chargerTeamSuccess(data, text, jqXHR) {
         var equipe = new Equipe();
         equipe.setPk($(this).find("id").text());
         equipe.setNom($(this).find("nom").text());
-        cmbEquipes.options[cmbEquipes.options.length] = new Option(equipe, JSON.stringify(equipe));
+        cmbEquipes.options[cmbEquipes.options.length] = new Option(equipe.toString(), JSON.stringify(equipe));
     });
 }
 
@@ -74,12 +74,6 @@ $(document).ready(function() {
     var cmbJoueurs = $("#cmbJoueurs");
     var equipe = '';
     var joueur = '';
-    $.getScript("javascripts/beans/equipe.js", function() {
-        console.log("equipe.js chargé !");
-    });
-    $.getScript("javascripts/beans/joueur.js", function() {
-        console.log("joueur.js chargé !");
-    });
     $.getScript("javascripts/services/servicesHttp.js", function() {
         console.log("servicesHttp.js chargé !");
         chargerTeam(chargerTeamSuccess, chargerTeamError);
