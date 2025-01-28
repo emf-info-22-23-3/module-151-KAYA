@@ -18,6 +18,12 @@ function chargerTeamSuccess(data, text, jqXHR) {
     var tabEquipes = document.getElementById("tabEquipes"); // Le tableau où on va afficher les équipes
     tabEquipes.innerHTML = ""; // Vide le contenu existant dans le tableau
 
+    var row = tabEquipes.insertRow();
+    var cell1 = row.insertCell(0); 
+    cell1.textContent = "ID";
+    var cell2 = row.insertCell(1); 
+    cell2.textContent = "Equipe";
+
     // Vérifie si data est un tableau d'équipes
     for (var i = 0; i < data.length; i++) {
         var equipe = data[i];  // Chaque équipe est une chaîne de caractères
