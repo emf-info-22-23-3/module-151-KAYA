@@ -1,5 +1,186 @@
-<html>
-  <body>
-    <h1>Hello world</h1>
-  </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 30px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-type {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .fun-fact {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .fun-fact img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+        }
+
+        .side-menu {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 100px;
+            padding: 20px;
+        }
+
+        .side-menu.visible {
+            display: block;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .popup.success {
+            background-color: #4CAF50;
+        }
+
+        .popup.error {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="user-info">
+            <div id="userName">Visitor</div>
+            <div id="userType" class="user-type">Client/Administrator</div>
+        </div>
+    </div>
+
+    <div class="login-container">
+        <h1>Administration</h1>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn">Sign In</button>
+        </form>
+    </div>
+
+    <div class="side-menu" id="sideMenu">
+        <div class="menu-item">Armours</div>
+        <div class="menu-item">Add new armour set</div>
+        <div class="menu-item">Modify</div>
+    </div>
+
+    <div class="fun-fact">
+        <p>Fun Fact: Did you know that in Breath of the Wild, you can shield surf on your shield down snowy mountains?</p>
+        <img src="zelda-botw.jpg" alt="Zelda Breath of the Wild" width="400">
+    </div>
+
+    <div id="successPopup" class="popup success">Login successful!</div>
+    <div id="errorPopup" class="popup error">Invalid credentials!</div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Send login request to PHP backend
+            fetch('login.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showPopup('successPopup');
+                    updateUserInfo(data.user);
+                    document.getElementById('sideMenu').classList.add('visible');
+                } else {
+                    showPopup('errorPopup');
+                }
+            })
+            .catch(error => {
+                showPopup('errorPopup');
+            });
+        });
+
+        function showPopup(popupId) {
+            const popup = document.getElementById(popupId);
+            popup.style.display = 'block';
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 3000);
+        }
+
+        function updateUserInfo(user) {
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('userType').textContent = user.type;
+        }
+    </script>
+</body>
 </html>
