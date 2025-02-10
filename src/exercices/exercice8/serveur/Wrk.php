@@ -8,15 +8,17 @@ class Wrk {
     }
 
     public function getEquipes() {
-        $stmt = $this->connection->prepare("SELECT id, nom FROM equipes");
-        $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $equipes = [];
-        foreach ($result as $row) {
-            $equipes[] = new Equipe($row['id'], $row['nom']);
+        $reponse = $this->$connection->query("SELECT id, nom FROM equipes");
+ 
+        $equipe = [];
+        while ($row = $response->fetch()) {
+            $equipe = $row['nom'] . $row['id'];
         }
+ 
+        $reponse->closeCursor();
+
         return $equipes;
+
     }
 
     public function getJoueursByEquipe($equipeId) {

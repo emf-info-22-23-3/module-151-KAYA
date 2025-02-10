@@ -5,7 +5,7 @@
  * @version 1.0 / 20-SEP-2013
  */
 
-var BASE_URL = "http://localhost/EXERCICE%206/PartieServeur/serveur.php";
+var BASE_URL = "http://localhost/module-151-elif-mee/src/exercices/exercice9/serveur/serveur.php";
 
 /**
  * Fonction permettant de charger les données d'équipe.
