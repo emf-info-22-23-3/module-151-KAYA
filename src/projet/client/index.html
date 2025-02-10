@@ -4,17 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administration</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
         }
 
         .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem;
             display: flex;
-            justify-content: flex-end;
-            margin-bottom: 30px;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .user-info {
@@ -22,165 +26,192 @@
         }
 
         .user-type {
-            text-decoration: underline;
-            cursor: pointer;
+            font-weight: bold;
         }
 
-        .login-container {
+        .user-role {
+            text-decoration: underline;
+            color: #ecf0f1;
+        }
+
+        .main-content {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
             max-width: 400px;
             margin: 0 auto;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            border-radius: 5px;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 8px;
+        input {
+            padding: 0.5rem;
             border: 1px solid #ddd;
             border-radius: 4px;
         }
 
-        .btn {
-            background-color: #4CAF50;
+        button {
+            padding: 0.75rem;
+            background-color: #3498db;
             color: white;
-            padding: 10px 20px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            width: 100%;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #2980b9;
         }
 
         .fun-fact {
+            margin-top: 3rem;
             text-align: center;
-            margin-top: 40px;
         }
 
         .fun-fact img {
             max-width: 100%;
             height: auto;
-            margin-top: 10px;
+            margin-top: 1rem;
+            border-radius: 8px;
         }
 
-        .side-menu {
+        .sidebar {
             display: none;
             position: fixed;
             left: 0;
-            top: 100px;
-            padding: 20px;
-        }
-
-        .side-menu.visible {
-            display: block;
-        }
-
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 20px;
-            border-radius: 5px;
+            top: 60px;
+            width: 200px;
+            height: 100%;
+            background-color: #34495e;
+            padding: 2rem 1rem;
             color: white;
         }
 
-        .popup.success {
-            background-color: #4CAF50;
+        .sidebar.visible {
+            display: block;
         }
 
-        .popup.error {
-            background-color: #f44336;
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar a:hover {
+            background-color: #2c3e50;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="user-info">
-            <div id="userName">Visitor</div>
-            <div id="userType" class="user-type">Client/Administrator</div>
-        </div>
-    </div>
-
-    <div class="login-container">
+    <header class="header">
         <h1>Administration</h1>
-        <form id="loginForm">
+        <div class="user-info">
+            <div class="user-type" id="userType">Visitor</div>
+            <div class="user-role" id="userRole">Client/Administrator</div>
+        </div>
+    </header>
+
+    <nav class="sidebar" id="sidebar">
+        <a href="#armours">Armours</a>
+        <a href="#add">Add new armour set</a>
+        <a href="#modify">Modify</a>
+    </nav>
+
+    <main class="main-content">
+        <form class="login-form" id="loginForm">
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" required>
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" required>
             </div>
-            <button type="submit" class="btn">Sign In</button>
+            <button type="submit">Sign In</button>
         </form>
-    </div>
 
-    <div class="side-menu" id="sideMenu">
-        <div class="menu-item">Armours</div>
-        <div class="menu-item">Add new armour set</div>
-        <div class="menu-item">Modify</div>
-    </div>
+        <div class="fun-fact">
+            <p>Fun Fact: The Breath of the Wild map is approximately 9 times larger than Skyrim's map!</p>
+            <img src="/api/placeholder/800/400" alt="Zelda Breath of the Wild Landscape">
+        </div>
+    </main>
 
-    <div class="fun-fact">
-        <p>Fun Fact: Did you know that in Breath of the Wild, you can shield surf on your shield down snowy mountains?</p>
-        <img src="zelda-botw.jpg" alt="Zelda Breath of the Wild" width="400">
-    </div>
-
-    <div id="successPopup" class="popup success">Login successful!</div>
-    <div id="errorPopup" class="popup error">Invalid credentials!</div>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.js"></script>
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            // Send login request to PHP backend
-            fetch('login.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password })
-            })
-            .then(response => response.json())
-            .then(data => {
+            try {
+                const response = await fetch('/login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
                 if (data.success) {
-                    showPopup('successPopup');
-                    updateUserInfo(data.user);
-                    document.getElementById('sideMenu').classList.add('visible');
+                    showToast('Successfully logged in!', 'success');
+                    updateUserInterface(data.user);
                 } else {
-                    showPopup('errorPopup');
+                    showToast('Invalid email or password', 'error');
                 }
-            })
-            .catch(error => {
-                showPopup('errorPopup');
-            });
+            } catch (error) {
+                showToast('An error occurred', 'error');
+            }
         });
 
-        function showPopup(popupId) {
-            const popup = document.getElementById(popupId);
-            popup.style.display = 'block';
-            setTimeout(() => {
-                popup.style.display = 'none';
-            }, 3000);
+        function showToast(message, type) {
+            Toastify({
+                text: message,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: type === 'success' ? "#2ecc71" : "#e74c3c"
+            }).showToast();
         }
 
-        function updateUserInfo(user) {
-            document.getElementById('userName').textContent = user.name;
-            document.getElementById('userType').textContent = user.type;
+        function updateUserInterface(user) {
+            document.getElementById('userType').textContent = user.name;
+            document.getElementById('userRole').textContent = user.role;
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('sidebar').classList.add('visible');
+            
+            // Show/hide modify link based on admin status
+            const modifyLink = document.querySelector('a[href="#modify"]');
+            modifyLink.style.display = user.role === 'Administrator' ? 'block' : 'none';
         }
+
+        // Check if user is already logged in on page load
+        fetch('/checkLogin.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.loggedIn) {
+                    updateUserInterface(data.user);
+                }
+            });
     </script>
 </body>
 </html>
