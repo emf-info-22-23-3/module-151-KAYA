@@ -1,0 +1,251 @@
+/* Variables pour les couleurs principales */
+:root {
+  --primary-color: #2D9596;
+  --secondary-color: #265073;
+  --accent-color: #9AD0C2;
+  --background-color: #f0f2f5;
+  --text-color: #2c3e50;
+  --border-radius: 8px;
+  --transition: all 0.3s ease;
+}
+
+/* Reset et styles de base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+/* Header stylisé */
+.header {
+  background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+  color: white;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+  font-size: 2rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+/* Information utilisateur */
+.user-info {
+  background-color: white;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  text-align: right;
+}
+
+.user-type {
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.user-role {
+  color: var(--secondary-color);
+  font-size: 0.9rem;
+  text-decoration: none;
+  border-bottom: 2px solid var(--accent-color);
+  display: inline-block;
+}
+
+/* Conteneur principal */
+.main-content {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* [Previous CSS remains the same until login form inputs] */
+
+/* Login Form */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 380px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.login-form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-form input[type="text"],
+.login-form input[type="email"],
+.login-form input[type="password"] {
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px solid var(--accent-color);
+  border-radius: var(--border-radius);
+  text-align: center;
+  font-size: 1rem;
+  transition: var(--transition);
+  background-color: rgba(154, 208, 194, 0.1);
+}
+
+.login-form input[type="text"]:focus,
+.login-form input[type="email"]:focus,
+.login-form input[type="password"]:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(45, 149, 150, 0.1);
+  background-color: white;
+}
+
+.login-form button {
+  width: 200px;
+  margin: 1rem auto;
+}
+
+/* Conteneur titre et boutons */
+.title-buttons-container {
+  background-color: white;
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 2rem;
+}
+
+.title-buttons-container h1 {
+  color: var(--secondary-color);
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+}
+
+hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(to right, var(--accent-color), var(--primary-color));
+  margin: 1.5rem 0;
+}
+
+/* Boutons */
+button {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+button:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#saveButton, #deleteButton, #modifyButton, #cancelButton, #addButton {
+  width: 250px;
+  margin: 0.5rem 0;
+  margin-left: auto;
+}
+
+/* Formulaire */
+.form-container {
+  background-color: white;
+  border: 2px solid var(--accent-color);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--secondary-color);
+  font-weight: 600;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px solid #e1e1e1;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+}
+
+.welcome img {
+  max-width: 100%;
+  height: auto;
+  margin-top: 1rem;
+  border-radius: 8px;
+}
+
+.welcome {
+  text-align: center;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(45, 149, 150, 0.1);
+}
+
+.form-group input[type="file"] {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border: 2px dashed var(--accent-color);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  width: 100%;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.main-content {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .main-content {
+    margin: 1rem;
+    padding: 1rem;
+  }
+  
+  .header h1 {
+    font-size: 1.5rem;
+  }
+  
+  #saveButton, #deleteButton, #modifyButton, #cancelButton, #addButton {
+    width: 100%;
+  }
+}
