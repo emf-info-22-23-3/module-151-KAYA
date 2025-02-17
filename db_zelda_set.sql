@@ -1,0 +1,1 @@
+SELECT * FROM db_zelda_set.t_set;
