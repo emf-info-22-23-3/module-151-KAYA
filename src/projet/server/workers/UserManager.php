@@ -15,7 +15,7 @@ class DBUserManager
     }
 
     /**
-     * Vérifie les identifiants de l'utilisateur.
+     * Vérifie les identifiants de l'utilisateur.ss
      *
      * @param string $login
      * @param string $password
