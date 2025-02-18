@@ -17,7 +17,7 @@ class SessionManager
      */
     public function login($user)
     {
-        $_SESSION['logged'] = $user->getPassword();
+        $_SESSION['logged'] = $user->getEmail();
         $_SESSION['isAdmin'] = $user->getRole();
     }
 
@@ -50,10 +50,20 @@ class SessionManager
      */
     public function getAuthor()
     {
-        $name = $_SESSION['name'];
-        $role = $_SESSION['isAdmin'];
+        $email = $_SESSION['email'];
+        return $email;
+    }
 
-        return $name . $role;
+        /**
+     * Retourne l'id de l'utilisateur de la session.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        $id = $_SESSION['id'];
+
+        return $id;
     }
 }
 ?>
