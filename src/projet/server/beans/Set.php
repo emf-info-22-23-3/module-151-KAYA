@@ -44,6 +44,20 @@ class Set {
     public function getFkTrousersSource() { return $this->fk_trousers_source; }
     public function getImageSet() { return $this->image_set; }
 
+    // Setters
+    public function setFkUser($fk_user) { $this->fk_user = $fk_user; }
+    public function setNom($nom) { $this->nom = $nom; }
+    public function setCapNom($cap_nom) { $this->cap_nom = $cap_nom; }
+    public function setTunicNom($tunic_nom) { $this->tunic_nom = $tunic_nom; }
+    public function setTrousersNom($trousers_nom) { $this->trousers_nom = $trousers_nom; }
+    public function setDescription($description) { $this->description = $description; }
+    public function setEffet($effet) { $this->effet = $effet; }
+    public function setFkCapSource($fk_cap_source) { $this->fk_cap_source = $fk_cap_source; }
+    public function setFkTunicSource($fk_tunic_source) { $this->fk_tunic_source = $fk_tunic_source; }
+    public function setFkTrousersSource($fk_trousers_source) { $this->fk_trousers_source = $fk_trousers_source; }
+    public function setImageSet($image_set) { $this->image_set = $image_set; }
+ 
+
     public function toXML() {
         return '<set>' .
                '<pk_set>' . $this->pk_set . '</pk_set>' .

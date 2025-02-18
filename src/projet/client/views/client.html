@@ -6,8 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add New Armour Set</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/cssPrincipale.css">
+    <!--ce lien est pour les TOASTs qui sont des petites popup success ou error en haut a droite...-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.js"></script>
+    <link rel="stylesheet" href="css/cssPrincipale.css"></link>
+    <script type="text/javascript" src="javascripts/helpers/httpService.js"></script>
+    <script type="text/javascript" src="javascripts/helpers/viewLoader.js"></script>
+    <script type="text/javascript" src="javascripts/helpers/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="javascripts/controllers/indexCtrl.js"></script>
+    <script type="text/javascript" src="javascripts/services/servicesHttp.js"></script>
 </head>
 
 <body>
@@ -44,7 +50,14 @@
                 </div>
                 <div class="form-group">
                     <label for="armorCapSource">Cap Source:</label>
-                    <textarea id="armorCapSource" required></textarea>
+                    <div class="source-group">
+                        <select id="armorCapSourceType">
+                            <option value="shop">Shop</option>
+                            <option value="chest">Chest</option>
+                            <option value="quest">Quest</option>
+                        </select>
+                        <textarea id="armorCapSource" required></textarea>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="armorTunicName">Tunic Name:</label>
@@ -52,7 +65,14 @@
                 </div>
                 <div class="form-group">
                     <label for="armorTunicSource">Tunic Source:</label>
-                    <textarea id="armorTunicSource" required></textarea>
+                    <div class="source-group">
+                        <select id="armorTunicSourceType">
+                            <option value="shop">Shop</option>
+                            <option value="chest">Chest</option>
+                            <option value="quest">Quest</option>
+                        </select>
+                        <textarea id="armorTunicSource" required></textarea>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="armorTrousersName">Trousers Name:</label>
@@ -60,7 +80,14 @@
                 </div>
                 <div class="form-group">
                     <label for="armorTrousersSource">Trousers Source:</label>
-                    <textarea id="armorTrousersSource" required></textarea>
+                    <div class="source-group">
+                        <select id="armorTrousersSourceType">
+                            <option value="shop">Shop</option>
+                            <option value="chest">Chest</option>
+                            <option value="quest">Quest</option>
+                        </select>
+                        <textarea id="armorTrousersSource" required></textarea>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="armorEffect">Effect:</label>
@@ -77,6 +104,18 @@
             </form>
         </div>
     </main>
+    <script>
+        document.getElementById('addArmorForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            Toastify({
+                text: "Armor set saved successfully!",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "green"
+            }).showToast();
+        });
+    </script>
 </body>
 
 </html>

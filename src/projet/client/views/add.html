@@ -6,8 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add New Armour Set</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/cssPrincipale.css">
+    <!--ce lien est pour les TOASTs qui sont des petites popup success ou error en haut a droite...-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.js"></script>
+    <link rel="stylesheet" href="css/cssPrincipale.css"></link>
+    <script type="text/javascript" src="javascripts/helpers/httpService.js"></script>
+    <script type="text/javascript" src="javascripts/helpers/viewLoader.js"></script>
+    <script type="text/javascript" src="javascripts/helpers/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="javascripts/controllers/indexCtrl.js"></script>
+    <script type="text/javascript" src="javascripts/services/servicesHttp.js"></script>
 </head>
 
 <body>
@@ -25,8 +31,8 @@
         <div class="title-buttons-container">
             <h1>Add a New Armour Set</h1>
             <hr>
-                <button id="saveButton">Save</button>
-                <button id="cancelButton">Cancel</button>
+                <button id="saveButton" onclick="ctrl.loadAdmin()">Save</button>
+                <button id="cancelButton" onclick="ctrl.loadAdmin()">Cancel</button>
         </div>
 
         <!-- Container for form with a border -->
@@ -37,14 +43,62 @@
                     <input type="text" id="armorName" required>
                 </div>
                 <div class="form-group">
-                    <label for="armorImage">Upload Image:</label>
-                    <input type="file" id="armorImage" accept="image/*">
+                    <label for="armorCapName">Cap Name:</label>
+                    <textarea id="armorCapName" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="armorCapSource">Cap Source:</label>
+                    <div class="source-group">
+                        <select id="armorCapSourceType">
+                            <option value="shop">Shop</option>
+                            <option value="chest">Chest</option>
+                            <option value="quest">Quest</option>
+                        </select>
+                        <textarea id="armorCapSource" required></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="armorTunicName">Tunic Name:</label>
+                    <textarea id="armorTunicName" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="armorTunicSource">Tunic Source:</label>
+                    <div class="source-group">
+                        <select id="armorTunicSourceType">
+                            <option value="shop">Shop</option>
+                            <option value="chest">Chest</option>
+                            <option value="quest">Quest</option>
+                        </select>
+                        <textarea id="armorTunicSource" required></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="armorTrousersName">Trousers Name:</label>
+                    <textarea id="armorTrousersName" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="armorTrousersSource">Trousers Source:</label>
+                    <div class="source-group">
+                        <select id="armorTrousersSourceType">
+                            <option value="shop">Shop</option>
+                            <option value="chest">Chest</option>
+                            <option value="quest">Quest</option>
+                        </select>
+                        <textarea id="armorTrousersSource" required></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="armorEffect">Effect:</label>
+                    <textarea id="armorEffect" required></textarea>
                 </div>
                 <div class="form-group">
                     <label for="armorDescription">Description:</label>
                     <textarea id="armorDescription" required></textarea>
                 </div>
-                <button type="submit">Submit</button>
+                <div class="form-group">
+                    <label for="armorImage">Upload Image:</label>
+                    <input type="file" id="armorImage" accept="image/*">
+                </div>
             </form>
         </div>
     </main>

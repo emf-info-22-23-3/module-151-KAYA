@@ -1,11 +1,11 @@
 <?php
 
-include_once('configConnexion.php');
+include_once('dbConfig.php');
 
 /**
  * Classe connexion
  *
- * Cette classe de gérer l'accès à la base de données.
+ * Cette classe gère l'accès à la base de données.
  *
  * @version 1.0
  * @author Neuhaus Olivier <neuhauso@edufr.ch>
@@ -21,12 +21,11 @@ class connexion {
      * Méthode qui crée l'unique instance de la classe
      * si elle n'existe pas encore puis la retourne.
      *
-     * @param void
      * @return Singleton de la connexion
      */
     public static function getInstance() {
         if (is_null(self::$_instance)) {
-            self::$_instance = new connexion();
+            self::$_instance = new self();
         }
         return self::$_instance;
     }
@@ -34,24 +33,27 @@ class connexion {
     /**
      * Fonction permettant d'ouvrir une connexion à la base de données.
      */
-    private function __construct() {
+    private function __construct()
+    {
+        $config = new DBConfig();
+ 
         try {
-            $this->pdo = new PDO(DB_TYPE . ':host=' . DB_HOST . ';dbname=' . DB_NAME, DB_USER, DB_PASS, array(
+            $type = $config->getType();
+            $host = $config->getHost();
+            $name = $config->getName();
+            $user = $config->getUser();
+            $pass = $config->getPass();
+ 
+            $this->pdo = new PDO($type . ':host=' . $host . ';dbname=' . $name, $user, $pass, array(
                 PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
-                PDO::ATTR_PERSISTENT => true));
+                PDO::ATTR_PERSISTENT => true
+            ));
         } catch (PDOException $e) {
             print "Erreur !: " . $e->getMessage() . "<br/>";
             die();
         }
     }
-
-    /**
-     * Fonction permettant de fermer la connexion à la base de données.
-     */
-    public function __destruct() {
-        $this->pdo = null;
-    }
-
+    
     /**
      * Fonction permettant d'exécuter un select dans MySQL.
      * A utiliser pour les SELECT.
@@ -105,8 +107,6 @@ class connexion {
             die();
         }
     }
-
-
 }
 
 ?>
