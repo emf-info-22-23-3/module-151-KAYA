@@ -44,10 +44,16 @@ class DBConnection {
             $user = $this->config->getUser();
             $pass = $this->config->getPass();
 
-            $this->pdo = new PDO($type . ':host=' . $host . ';dbname=' . $name, $user, $pass, array(
-                PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
-                PDO::ATTR_PERSISTENT => true
-            ));
+            $this->pdo = new PDO(
+                $type . ':host=' . $host . ';dbname=' . $name, 
+                $user, 
+                $pass, 
+                array(
+                    PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+                    PDO::ATTR_PERSISTENT => true
+                )
+            );
+            
         } catch (PDOException $e) {
             print "Erreur !: " . $e->getMessage() . "<br/>";
             die();
