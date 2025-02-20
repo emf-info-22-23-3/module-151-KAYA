@@ -60,7 +60,18 @@ class servicesHttp {
             type: "GET",
             dataType: "xml",
             url: this.BASE_URL,
-            data: 'action=GET',
+            data: 'action=getAnnonces',
+            success: successCallback,
+            error: errorCallback
+        });
+    }
+
+    getArmorNames(successCallback, errorCallback) {
+        $.ajax({
+            type: "GET",
+            dataType: "xml",
+            url: this.BASE_URL,
+            data: 'action=getArmorNames',
             success: successCallback,
             error: errorCallback
         });
@@ -72,7 +83,7 @@ class servicesHttp {
             dataType: "xml",
             url: this.BASE_URL,
             data: {
-                action: 'disconnect',
+                action: 'add',
             },
             success: successCallback,
             error: errorCallback
@@ -85,7 +96,7 @@ class servicesHttp {
             dataType: "xml",
             url: this.BASE_URL,
             data: {
-                action: 'disconnect',
+                action: 'modify',
             },
             success: successCallback,
             error: errorCallback
@@ -98,7 +109,7 @@ class servicesHttp {
             dataType: "xml",
             url: this.BASE_URL,
             data: {
-                action: 'disconnect',
+                action: 'delete',
             },
             success: successCallback,
             error: errorCallback

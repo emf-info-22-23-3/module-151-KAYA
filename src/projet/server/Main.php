@@ -6,6 +6,9 @@ require_once 'helpers/DBArticleManager.php';
 require_once 'helpers/DBUserManager.php';
 require_once 'helpers/DBConfig.php';
 require_once 'helpers/DBConnection.php';
+require_once 'beans/Set.php';
+require_once 'beans/Source.php';
+require_once 'beans/User.php';
 
 session_start();
 
@@ -119,15 +122,27 @@ switch ($_SERVER['REQUEST_METHOD']) {
         break;
 
     case 'GET':
-        if (!isLoggedIn()) {
-            sendXMLResponse(false, 'Please log in first');
-            break;
-        }
+        $action = $_GET['action'] ?? '';
+        
+        switch($action) {
+            case 'getAnnonces':
+                if (!isLoggedIn()) {
+                    sendXMLResponse(false, 'Please log in first');
+                    break;
+                }
 
-        $sets = $articleManager->getAllSets();
-        header('Content-Type: text/xml');
-        echo $articleManager->convertSetsToXML($sets);
-        break;
+                $sets = $articleManager->getAllSets();
+                header('Content-Type: text/xml');
+                echo $articleManager->convertSetsToXML($sets);
+                break;
+            case 'getArmorNames':
+                if (!isLoggedIn()) {
+                    sendXMLResponse(false, 'Please log in first');
+                    break;
+                }
+
+                $sets = $articleManager->getAllSets();
+        }
 
     case 'PUT':
         if (!isLoggedIn()) {

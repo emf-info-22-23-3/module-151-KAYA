@@ -22,12 +22,12 @@ class DBUserManager
         
         $result = $db->SelectQuery($sql, array($email));
         
-        if ($result) {
+        if ($result && isset($result[0])) {
             return new User(
-                $result['PK_User'],
-                $result['Email'],
-                $result['Password'],
-                $result['RoleName']
+                $result[0]['PK_User'],
+                $result[0]['Email'],
+                $result[0]['Password'],
+                $result[0]['RoleName']
             );
         }
         return false;

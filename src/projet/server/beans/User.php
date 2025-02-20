@@ -1,28 +1,28 @@
 <?php
 class User {
-    private $id;
+    private $pk;
     private $email;
     private $password;
-    private $roleId;
+    private $role;
 
-    public function __construct($id, $email, $password, $roleId) {
-        $this->id = $id;
+    public function __construct($pk, $email, $password, $role) {
+        $this->pk = $pk;
         $this->email = $email;
         $this->password = $password;
-        $this->roleId = $roleId;
+        $this->role = $role;
     }
 
     // Getters
-    public function getId() { return $this->id; }
+    public function getPK() { return $this->pk; }
     public function getEmail() { return $this->email; }
     public function getPassword() { return $this->password; }
-    public function getRoleId() { return $this->roleId; }
+    public function getRole() { return $this->role; }
 
     public function toArray() {
         return [
-            'id' => $this->id,
+            'pk' => $this->pk,
             'email' => $this->email,
-            'roleId' => $this->roleId
+            'role' => $this->role
         ];
     }
 }
