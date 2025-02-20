@@ -20,7 +20,7 @@ class DBUserManager
                 JOIN t_role r ON u.FK_Role = r.PK_Role 
                 WHERE u.Email = ?";
         
-        $result = $db->selectSingleQuery($sql, array($email));
+        $result = $db->SelectQuery($sql, array($email));
         
         if ($result) {
             return new User(
