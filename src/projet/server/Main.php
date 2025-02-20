@@ -122,27 +122,15 @@ switch ($_SERVER['REQUEST_METHOD']) {
         break;
 
     case 'GET':
-        $action = $_GET['action'] ?? '';
-        
-        switch($action) {
-            case 'getAnnonces':
-                if (!isLoggedIn()) {
-                    sendXMLResponse(false, 'Please log in first');
-                    break;
-                }
-
-                $sets = $articleManager->getAllSets();
-                header('Content-Type: text/xml');
-                echo $articleManager->convertSetsToXML($sets);
-                break;
-            case 'getArmorNames':
-                if (!isLoggedIn()) {
-                    sendXMLResponse(false, 'Please log in first');
-                    break;
-                }
-
-                $sets = $articleManager->getAllSets();
+        if (!isLoggedIn()) {
+            sendXMLResponse(false, 'Please log in first');
+            break;
         }
+
+        $sets = $articleManager->getAnnonces();
+        header('Content-Type: text/xml');
+        echo $articleManager->convertSetsToXML($sets);
+        break;
 
     case 'PUT':
         if (!isLoggedIn()) {
