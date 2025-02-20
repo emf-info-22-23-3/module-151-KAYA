@@ -1,11 +1,11 @@
 <?php
 
 require_once 'workers/UserManager.php';
-require_once 'workers/ArticleManager.php';
+//require_once 'workers/ArticleManager.php';
 require_once 'helpers/DBArticleManager.php';
 require_once 'helpers/DBUserManager.php';
 require_once 'helpers/DBConfig.php';
-require_once 'helpers/DBConnexion.php';
+require_once 'helpers/DBConnection.php';
 
 session_start();
 
