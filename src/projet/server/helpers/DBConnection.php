@@ -34,6 +34,7 @@ class DBConnection {
         try {
 
             $type = $this->config->getType();
+            console.log($type);
             $host = $this->config->getHost();
             $name = $this->config->getName();
             $user = $this->config->getUser();
