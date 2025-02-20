@@ -5,6 +5,7 @@
  * @version 1.0 / 20-SEP-2013
  */
 
+
 class servicesHttp {
 
     constructor() {
@@ -23,7 +24,7 @@ class servicesHttp {
         $.ajax({
             type: "POST",
             dataType: "xml",
-            url: BASE_URL,
+            url: this.BASE_URL,
             data: {
                 action: 'login',
                 email: email,

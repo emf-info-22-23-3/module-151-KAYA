@@ -1,9 +1,6 @@
 <?php
-
-include_once('dbConfig.php');
-
 /**
- * Classe connexion
+ * Classe DBConnexion
  *
  * Cette classe gère l'accès à la base de données.
  *
@@ -22,7 +19,7 @@ class DBConnection {
      * si elle n'existe pas encore puis la retourne.
      *
      * @param void
-     * @return Singleton de la connexion
+     * @return Singleton de la DBConnexion
      */
     public static function getInstance()
     {
