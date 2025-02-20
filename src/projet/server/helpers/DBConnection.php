@@ -28,38 +28,26 @@ class DBConnection {
      * Fonction permettant d'ouvrir une connexion à la base de données.
      */
     private function __construct()
-{
-    $this->config = new DBConfig();
+    {
+        $this->config = new DBConfig();
 
-    try {
-        $type = $this->config->getType();
-        $host = $this->config->getHost();
-        $name = $this->config->getName();
-        $user = $this->config->getUser();
-        $pass = $this->config->getPass();
+        try {
 
-        $options = array(
-            PDO::ATTR_PERSISTENT => true,
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-        );
+            $type = $this->config->getType();
+            $host = $this->config->getHost();
+            $name = $this->config->getName();
+            $user = $this->config->getUser();
+            $pass = $this->config->getPass();
 
-        // Only add MYSQL_ATTR_INIT_COMMAND if it's defined
-        if (defined('PDO::MYSQL_ATTR_INIT_COMMAND')) {
-            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET NAMES utf8';
+            $this->pdo = new PDO($type . ':host=' . $host . ';dbname=' . $name, $user, $pass, array(
+                PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+                PDO::ATTR_PERSISTENT => true
+            ));
+        } catch (PDOException $e) {
+            print "Erreur !: " . $e->getMessage() . "<br/>";
+            die();
         }
-
-        $this->pdo = new PDO(
-            $type . ':host=' . $host . ';dbname=' . $name . ';charset=utf8',
-            $user, 
-            $pass, 
-            $options
-        );
-    } catch (PDOException $e) {
-        print "Erreur !: " . $e->getMessage() . "<br/>";
-        die();
     }
-}
     
     /**
      * Fonction permettant d'exécuter un select dans MySQL.
