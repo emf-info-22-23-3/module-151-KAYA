@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Lexkalli
+ * @author Kaya
  */
 class DBUserManager
 {

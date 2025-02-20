@@ -1,7 +1,6 @@
 <?php
 
 require_once 'workers/UserManager.php';
-//require_once 'workers/ArticleManager.php';
 require_once 'helpers/DBArticleManager.php';
 require_once 'helpers/DBUserManager.php';
 require_once 'helpers/DBConfig.php';
