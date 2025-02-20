@@ -1,62 +1,76 @@
-/*
- * Contrôleur de la vue "index.html"
- *
- * @author Olivier Neuhaus
- * @version 1.0 / 20-SEP-2013
- */
+class IndexCtrl {
+    constructor() {
+        this.http = new servicesHttp();
+        // Bind the methods to preserve 'this' context
+        this.connectSuccess = this.connectSuccess.bind(this);
+        this.CallbackError = this.CallbackError.bind(this);
+    }
 
+    connectSuccess(data, text, jqXHR) {
+        console.log("connectSuccess called");
+        if ($(data).find("success").text() === 'true') {
+			console.log($(data));
+			console.log(data);
+            Toastify({
+                text: "Login successful",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#33cc33"
+            }).showToast();
 
-class indexCtrl {
-	connectSuccess(data, text, jqXHR) {
-		console.log("chargerNotesSuccess called");
+            if($(data).find("isAdmin").text() === 'true'){
+                window.location.href = "views/admin.html"; 
+            } else {
+                window.location.href = "views/client.html"; 
+            }
+        } else {
+			console.log($(data));
+			console.log(data);
+            Toastify({
+                text: "Login failed. Incorrect email or password.",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#ff3333"
+            }).showToast();
+        }
+    }
 
-		if ($(data).find("result").text() == 'true') {
-			alert("Login successful");
-			// You can redirect or load the user dashboard after login
-			if($(data).find("isAdmin").text() == 'true'){
-				window.location.href = "views/admin.html"; 
-			} else {
-				window.location.href = "views/client.html"; 
-			}
-		} else {
-			alert("Login failed. Incorrect email or password.");
-		}
-	}
+    disconnectSuccess(data, text, jqXHR) {
+        Toastify({
+            text: "User disconnected",
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "#33cc33"
+        }).showToast();
+        
+        window.location.href = "../login.html";
+    }
 
-	disconnectSuccess(data, text, jqXHR) {
-		alert("Utilisateur déconnecté");
-		window.location.href = "../login.html"; 
-		chargerPersonnel(chargerPersonnelSuccess, CallbackError);
-	}
-
-
-	/**
-	 * Méthode appelée en cas d'erreur lors de la lecture du webservice
-	 * @param {type} data
-	 * @param {type} text
-	 * @param {type} jqXHR
-	 */
-	CallbackError(request, status, error) {
-		console.log("Error login:", error); // Debug log
-		alert("Error login: " + error);
-	}
+    CallbackError(request, status, error) {
+        console.log("Error login:", error);
+        Toastify({
+            text: "Error login: " + error,
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "#ff3333"
+        }).showToast();
+    }
 }
 
-/**
- * Méthode "start" appelée après le chargement complet de la page
- */
+// Start method called after page load
 $(document).ready(function () {
-	window.ctrl = new indexCtrl();
-	this.http = new httpService();
-	this.http.centraliserErreurHttp(indexCtrl.afficherErreurHttp);
+    window.ctrl = new IndexCtrl();
 
-	var submitLogin = $("#submitLogin");
-
-	submitLogin.click(function (event) {
-		var email = document.getElementById("email").val();
-		var password = document.getElementById("password").val();
-		console.log("Sending email:", email, "and password:", password);
-		connect(email, password, connectSuccess, CallbackError);
-	});
+    $("#loginForm").on("submit", function(event) {
+        event.preventDefault();
+        var email = $("#email").val();
+        var password = $("#password").val();
+        console.log("Form submitted");
+        console.log("Sending email:", email, "and password:", password);
+        window.ctrl.http.connect(email, password, window.ctrl.connectSuccess, window.ctrl.CallbackError);
+    });
 });
-

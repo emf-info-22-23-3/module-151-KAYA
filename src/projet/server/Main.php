@@ -36,6 +36,7 @@ function isAdmin() {
 
 function login($user) {
     $_SESSION['user_id'] = $user->getPK();
+    $_SESSION['email'] = $user->getEmail();
     $_SESSION['role'] = $user->getRole();
 }
 
@@ -58,11 +59,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 $email = $_POST['email'] ?? '';
                 $password = $_POST['password'] ?? '';
                 
-                $user = $userManager->checkLogin($email, $password);
+                $user = $userManager->checkCredentials($email, $password);
                 if ($user) {
                     login($user);
                     sendXMLResponse(true, 'Login successful', [
                         'isAdmin' => $user->getRole() === 'Administrator' ? 'true' : 'false',
+                        'email' => $user->getEmail(),
                         'role' => $user->getRole()
                     ]);
                 } else {
@@ -100,7 +102,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     $_POST['fk_trousers_source'] ?? ''
                 );
 
-                $result = $userManager->addSet($set);
+                $result = $articleManager->addSet($set);
                 sendXMLResponse($result !== false, $result ? 'Set added successfully' : 'Failed to add set');
                 break;
 
@@ -116,9 +118,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
             break;
         }
 
-        $sets = $userManager->getAllSets();
+        $sets = $articleManager->getAllSets();
         header('Content-Type: text/xml');
-        echo $userManager->convertSetsToXML($sets);
+        echo $articleManager->convertSetsToXML($sets);
         break;
 
     case 'PUT':
@@ -147,7 +149,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             $putData['fk_trousers_source'] ?? ''
         );
 
-        $result = $userManager->updateSet($set);
+        $result = $articleManager->updateSet($set);
         sendXMLResponse($result, $result ? 'Set updated successfully' : 'Failed to update set');
         break;
 
@@ -168,7 +170,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             break;
         }
 
-        $result = $userManager->deleteSet($setId);
+        $result = $articleManager->deleteSet($setId);
         sendXMLResponse($result, $result ? 'Set deleted successfully' : 'Failed to delete set');
         break;
 

@@ -2,25 +2,30 @@
 /**
  * @author Lexkalli
  */
-
 class DBUserManager
 {
     /**
-     * Récupère un utilisateur par son login.
+     * Récupère un utilisateur par son email.
      *
-     * @param string $login
+     * @param string $email
      * @return User|false
      */
-    public function checkLogin($login){
-        $connection = Connection::getInstance();
-        $sql = "SELECT PK_User, Email, Password, FK_Role FROM t_User WHERE login = ?";
-        $result = $connection->selectSingleQuery($sql, array($login));
+    public function checkLogin($email)
+    {
+        $db = DBConnection::getInstance();
+        $sql = "SELECT u.PK_User, u.Email, u.Password, u.FK_Role, r.Role as RoleName 
+                FROM t_user u
+                JOIN t_role r ON u.FK_Role = r.PK_Role 
+                WHERE u.Email = ?";
+        
+        $result = $db->selectSingleQuery($sql, array($email));
+        
         if ($result) {
             return new User(
                 $result['PK_User'],
                 $result['Email'],
                 $result['Password'],
-                $result['FK_Role'],
+                $result['RoleName']
             );
         }
         return false;

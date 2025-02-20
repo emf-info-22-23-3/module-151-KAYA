@@ -12,20 +12,22 @@ include_once('dbConfig.php');
  * @project exemple
  */
 
-class connexion {
-
+class DBConnection {
     private static $_instance = null;
     private $pdo;
+    private $config;
 
     /**
      * Méthode qui crée l'unique instance de la classe
      * si elle n'existe pas encore puis la retourne.
      *
+     * @param void
      * @return Singleton de la connexion
      */
-    public static function getInstance() {
+    public static function getInstance()
+    {
         if (is_null(self::$_instance)) {
-            self::$_instance = new self();
+            self::$_instance = new DBConnection();
         }
         return self::$_instance;
     }
@@ -35,15 +37,16 @@ class connexion {
      */
     private function __construct()
     {
-        $config = new DBConfig();
- 
+        $this->config = new DBConfig();
+
         try {
-            $type = $config->getType();
-            $host = $config->getHost();
-            $name = $config->getName();
-            $user = $config->getUser();
-            $pass = $config->getPass();
- 
+
+            $type = $this->config->getType();
+            $host = $this->config->getHost();
+            $name = $this->config->getName();
+            $user = $this->config->getUser();
+            $pass = $this->config->getPass();
+
             $this->pdo = new PDO($type . ':host=' . $host . ';dbname=' . $name, $user, $pass, array(
                 PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
                 PDO::ATTR_PERSISTENT => true
