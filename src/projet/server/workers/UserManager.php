@@ -1,7 +1,9 @@
 <?php
+
 /**
  * @author Kaya
  */
+
 class UserManager
 {
     private $dbManager;

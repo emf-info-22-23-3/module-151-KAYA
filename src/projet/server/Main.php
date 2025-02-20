@@ -10,9 +10,7 @@ require_once 'helpers/DBConnection.php';
 session_start();
 
 /**
- * Main controller for the Zelda TOTK Armor application
- * Author: Kaya
- * Date: 17.02.2025
+ * @author Kaya
  */
 
 // Helper function for consistent XML responses

@@ -1,12 +1,7 @@
 <?php
+
 /**
- * Classe DBConnexion
- *
- * Cette classe gère l'accès à la base de données.
- *
- * @version 1.0
- * @author Neuhaus Olivier <neuhauso@edufr.ch>
- * @project exemple
+ * @author Kaya
  */
 
 class DBConnection {
