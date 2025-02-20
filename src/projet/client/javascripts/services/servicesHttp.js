@@ -66,6 +66,17 @@ class servicesHttp {
         });
     }
 
+    getArmorNames(successCallback, errorCallback) {
+        $.ajax({
+            type: "GET",
+            dataType: "xml",
+            url: this.BASE_URL,
+            data: 'action=getArmorNames',
+            success: successCallback,
+            error: errorCallback
+        });
+    }
+
     addSet(successCallback, errorCallback) {
         $.ajax({
             type: "POST",

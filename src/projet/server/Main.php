@@ -126,11 +126,26 @@ switch ($_SERVER['REQUEST_METHOD']) {
             sendXMLResponse(false, 'Please log in first');
             break;
         }
+        $action = $_GET['action'] ?? '';
+        
+        $sets = $articleManager->getAllSets();
 
-        $sets = $articleManager->getAnnonces();
-        header('Content-Type: text/xml');
-        echo $articleManager->convertSetsToXML($sets);
-        break;
+        switch($action) {
+            case 'getAnnonces':
+                header('Content-Type: text/xml');
+                echo $articleManager->convertSetsToXML($sets);
+                break;
+            case 'getArmorNames':
+                if (!isLoggedIn()) {
+                    sendXMLResponse(false, 'Please log in first');
+                    break;
+                }
+
+                $armorNames = $articleManager->getArmorNames();
+                header('Content-Type: text/xml');
+                echo $articleManager->convertSetsToXML($armorNames);
+                break;
+        }
 
     case 'PUT':
         if (!isLoggedIn()) {

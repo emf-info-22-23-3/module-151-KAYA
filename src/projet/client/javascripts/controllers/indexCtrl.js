@@ -3,52 +3,7 @@ class IndexCtrl {
         this.http = new servicesHttp();
         // Bind the methods to preserve 'this' context
         this.connectSuccess = this.connectSuccess.bind(this);
-        this.callbackError = this.callbackError.bind(this);
-        this.handleArmorNameSelect = this.handleArmorNameSelect.bind(this);
-        this.initializeEventListeners();
-        this.loadArmorNames();
-    }
-
-    initializeEventListeners() {
-        $("#armorNameSelect").on("change", this.handleArmorNameSelect);
-    }
-
-    loadArmorNames() {
-        this.http.getArmorNames(
-            (data) => {
-                const select = $("#armorNameSelect");
-                select.empty();
-                select.append('<option value="">Select an armor set...</option>');
-                
-                $(data).find("name").each(function() {
-                    const name = $(this).text();
-                    select.append(`<option value="${name}">${name}</option>`);
-                });
-            },
-            this.callbackError
-        );
-    }
-
-    handleArmorNameSelect() {
-        const selectedName = $("#armorNameSelect").val();
-        if (!selectedName) return;
-
-        this.http.getAnnonces(
-            (data) => {
-                $(data).find("set").each(function() {
-                    if ($(this).find("nom").text() === selectedName) {
-                        // Fill form fields with set data
-                        $("#armorName").val($(this).find("nom").text());
-                        $("#armorCapName").val($(this).find("cap_nom").text());
-                        $("#armorTunicName").val($(this).find("tunic_nom").text());
-                        $("#armorTrousersName").val($(this).find("trousers_nom").text());
-                        $("#armorEffect").val($(this).find("effet").text());
-                        $("#armorDescription").val($(this).find("description").text());
-                    }
-                });
-            },
-            this.callbackError
-        );
+        this.CallbackError = this.CallbackError.bind(this);
     }
 
     connectSuccess(data, text, jqXHR) {
@@ -94,7 +49,7 @@ class IndexCtrl {
         window.location.href = "../login.html";
     }
 
-    callbackError(request, status, error) {
+    CallbackError(request, status, error) {
         console.log("Error login:", error);
         Toastify({
             text: "Error login: " + error,
