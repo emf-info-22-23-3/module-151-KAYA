@@ -55,12 +55,15 @@ class servicesHttp {
         });
     }
 
-    getAnnonces(successCallback, errorCallback) {
+    getAnnoncesForArmor(successCallback, errorCallback) {
         $.ajax({
             type: "GET",
             dataType: "xml",
             url: this.BASE_URL,
-            data: 'action=getAnnonces',
+            data: {
+                action: 'getAnnonces',
+                id: 'id',
+            },
             success: successCallback,
             error: errorCallback
         });
@@ -71,7 +74,9 @@ class servicesHttp {
             type: "GET",
             dataType: "xml",
             url: this.BASE_URL,
-            data: 'action=getArmorNames',
+            data: {
+                action: 'getArmorNames',
+            },
             success: successCallback,
             error: errorCallback
         });

@@ -25,4 +25,13 @@ class User {
             'role' => $this->role
         ];
     }
+
+    public function toXML() {
+        return '<user>' .
+               '<pk>' . htmlspecialchars($this->pk) . '</pk>' .
+               '<email>' . htmlspecialchars($this->email) . '</email>' .
+               '<role>' . htmlspecialchars($this->role) . '</role>' .
+               '</user>';
+    }
+    
 }

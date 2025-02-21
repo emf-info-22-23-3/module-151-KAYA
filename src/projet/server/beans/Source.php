@@ -27,4 +27,13 @@ class Source {
             'typeSourceId' => $this->typeSourceId
         ];
     }
+
+    public function toXML() {
+        return '<source>' .
+               '<id>' . htmlspecialchars($this->id) . '</id>' .
+               '<source>' . htmlspecialchars($this->source) . '</source>' .
+               '<typeSourceId>' . htmlspecialchars($this->typeSourceId) . '</typeSourceId>' .
+               '</source>';
+    }
+    
 }

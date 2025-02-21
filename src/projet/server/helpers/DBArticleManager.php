@@ -13,7 +13,7 @@ class DBArticleManager
      */
     public function readSets()
     {
-        $db = DBConnexion::getInstance();
+        $db = DBConnection::getInstance();
 
         $sql = "SELECT 
                     s.*, 
@@ -49,6 +49,49 @@ class DBArticleManager
         }
         return $sets;
     }
+
+    public function readSet($id)
+    {
+    $db = DBConnection::getInstance();
+
+    // Query to fetch a single set based on the provided PK_Set
+    $sql = "SELECT 
+                s.*, 
+                cs.Source as cap_source, 
+                ts.Source as tunic_source,
+                trs.Source as trousers_source, 
+                u.Email as creator_email
+            FROM t_set s
+            JOIN t_source cs ON s.FK_Cap_Source = cs.PK_Source
+            JOIN t_source ts ON s.FK_Tunic_Source = ts.PK_Source
+            JOIN t_source trs ON s.FK_Trousers_Source = trs.PK_Source
+            JOIN t_user u ON s.FK_User = u.PK_User
+            WHERE s.PK_Set = :id"; // Only fetch the set with the specific PK_Set
+
+    // Perform the query and fetch the result
+    $result = $db->selectQuery($sql, array(':id' => $id));
+
+    // If the set is found, return the Set object, otherwise return null
+    if (count($result) > 0) {
+        $row = $result[0]; // Since it's a unique PK, only one result
+        $set = new Set(
+            $row['PK_Set'],
+            $row['FK_User'],
+            $row['Nom'],
+            $row['Cap_Nom'],
+            $row['Tunic_Nom'],
+            $row['Trousers_Nom'],
+            $row['Description'],
+            $row['Effet'],
+            $row['FK_Cap_Source'],
+            $row['FK_Tunic_Source'],
+            $row['FK_Trousers_Source'],
+            $row['Image_Set']
+        );
+        return $set;  // Return the found set
+    }
+}
+
 
     /**
      * Ajoute un nouveau set dans la base de données.

@@ -16,20 +16,51 @@ session_start();
  * @author Kaya
  */
 
-// Helper function for consistent XML responses
+/**
+ * Helper function for consistent XML responses that can handle array data
+ * 
+ * @param bool $success Whether the operation was successful
+ * @param string $message Optional message to include in response
+ * @param array $data Optional data to include in response
+ */
 function sendXMLResponse($success, $message = '', $data = null) {
-    header('Content-Type: text/xml');
+    header('Content-Type: text/xml; charset=UTF-8');
     echo "<?xml version='1.0' encoding='UTF-8'?>\n";
     echo "<response>\n";
     echo "  <success>" . ($success ? 'true' : 'false') . "</success>\n";
+    
     if ($message) {
-        echo "  <message>" . htmlspecialchars($message) . "</message>\n";
+        echo "  <message>" . htmlspecialchars($message, ENT_XML1, 'UTF-8') . "</message>\n";
     }
+    
     if ($data) {
-        foreach ($data as $key => $value) {
-            echo "  <" . htmlspecialchars($key) . ">" . htmlspecialchars($value) . "</" . htmlspecialchars($key) . ">\n";
+        foreach ($data as $key => $items) {
+            // Start the container element (e.g., <armorNames>)
+            echo "  <" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
+            
+            if (is_array($items)) {
+                foreach ($items as $item) {
+                    if (is_object($item) && method_exists($item, 'toXML')) {
+                        // If it's an object with toXML method, use that
+                        echo "    " . $item->toXML() . "\n";
+                    } else if (is_array($item)) {
+                        // If it's an array (like your armor names), create an element
+                        echo "    <armor>\n";
+                        foreach ($item as $itemKey => $itemValue) {
+                            echo "      <" . htmlspecialchars($itemKey, ENT_XML1, 'UTF-8') . ">" 
+                                . htmlspecialchars($itemValue, ENT_XML1, 'UTF-8') 
+                                . "</" . htmlspecialchars($itemKey, ENT_XML1, 'UTF-8') . ">\n";
+                        }
+                        echo "    </armor>\n";
+                    }
+                }
+            }
+            
+            // Close the container element
+            echo "  </" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
         }
     }
+    
     echo "</response>";
     exit;
 }
@@ -122,28 +153,26 @@ switch ($_SERVER['REQUEST_METHOD']) {
         break;
 
     case 'GET':
-        if (!isLoggedIn()) {
-            sendXMLResponse(false, 'Please log in first');
-            break;
-        }
         $action = $_GET['action'] ?? '';
-        
-        $sets = $articleManager->getAllSets();
-
         switch($action) {
-            case 'getAnnonces':
-                header('Content-Type: text/xml');
-                echo $articleManager->convertSetsToXML($sets);
+            case 'getAnnoncesForArmor':
+                if (!isLoggedIn()) {
+                    sendXMLResponse(false, 'Please log in first');
+                    break;
+                }
+
+                $id = $_GET['id'] ?? '';
+                $set = $articleManager->getSet($id);
+                sendXMLResponse(true, '', array('set' => $set));
                 break;
             case 'getArmorNames':
                 if (!isLoggedIn()) {
                     sendXMLResponse(false, 'Please log in first');
                     break;
                 }
-
+                
                 $armorNames = $articleManager->getArmorNames();
-                header('Content-Type: text/xml');
-                echo $articleManager->convertSetsToXML($armorNames);
+                sendXMLResponse(true, '', array('armorNames' => $armorNames));
                 break;
         }
 
