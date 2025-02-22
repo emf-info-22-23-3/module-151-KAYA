@@ -7,7 +7,7 @@ class AddCtrl {
 
     getSourceTypesSuccess(data) {
     console.log("getSourceTypesSuccess called");
-    console.log("Received dataAAAAAAAA:", data);
+    console.log("Received dataAAAAAAAAA:", data);
 
     // Check if data is a string and parse it if necessary
     if (typeof data === "string") {
