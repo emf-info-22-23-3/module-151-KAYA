@@ -38,7 +38,10 @@ class ArticleManager {
     }
 
     public function getSet($id) {
-        return $this->dbArticleManager->getSet($id);
+        error_log("ArticleManager.getSet called with ID: " . $id);
+        $set = $this->dbArticleManager->readSet($id);
+        error_log("DBArticleManager.readSet returned: " . ($set ? "not null" : "null"));
+        return $set ?: false;
     }
 
     /**

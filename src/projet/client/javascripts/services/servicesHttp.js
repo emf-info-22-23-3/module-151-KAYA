@@ -55,14 +55,15 @@ class servicesHttp {
         });
     }
 
-    getAnnoncesForArmor(successCallback, errorCallback) {
+    getAnnoncesForArmor(id, successCallback, errorCallback) {
+        console.log("Fetching armor set with ID:", id); // Add debug logging
         $.ajax({
             type: "GET",
             dataType: "xml",
             url: this.BASE_URL,
             data: {
-                action: 'getAnnonces',
-                id: 'id',
+                action: 'getAnnoncesForArmor',
+                id: id  // Make sure id is being passed correctly
             },
             success: successCallback,
             error: errorCallback

@@ -160,10 +160,20 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     sendXMLResponse(false, 'Please log in first');
                     break;
                 }
-
+            
                 $id = $_GET['id'] ?? '';
+                error_log("getAnnoncesForArmor called with ID: " . $id);
+                
                 $set = $articleManager->getSet($id);
-                sendXMLResponse(true, '', array('set' => $set));
+                error_log("Set returned from getSet: " . ($set ? "not null" : "null"));
+                
+                if ($set) {
+                    error_log("Set XML: " . $set->toXML());
+                    sendXMLResponse(true, '', ['set' => $set]);
+                } else {
+                    error_log("No set found for ID: " . $id);
+                    sendXMLResponse(false, 'Set not found');
+                }
                 break;
             case 'getArmorNames':
                 if (!isLoggedIn()) {

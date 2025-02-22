@@ -50,47 +50,56 @@ class DBArticleManager
         return $sets;
     }
 
-    public function readSet($id)
-    {
-    $db = DBConnection::getInstance();
-
-    // Query to fetch a single set based on the provided PK_Set
-    $sql = "SELECT 
-                s.*, 
-                cs.Source as cap_source, 
-                ts.Source as tunic_source,
-                trs.Source as trousers_source, 
-                u.Email as creator_email
-            FROM t_set s
-            JOIN t_source cs ON s.FK_Cap_Source = cs.PK_Source
-            JOIN t_source ts ON s.FK_Tunic_Source = ts.PK_Source
-            JOIN t_source trs ON s.FK_Trousers_Source = trs.PK_Source
-            JOIN t_user u ON s.FK_User = u.PK_User
-            WHERE s.PK_Set = :id"; // Only fetch the set with the specific PK_Set
-
-    // Perform the query and fetch the result
-    $result = $db->selectQuery($sql, array(':id' => $id));
-
-    // If the set is found, return the Set object, otherwise return null
-    if (count($result) > 0) {
-        $row = $result[0]; // Since it's a unique PK, only one result
-        $set = new Set(
-            $row['PK_Set'],
-            $row['FK_User'],
-            $row['Nom'],
-            $row['Cap_Nom'],
-            $row['Tunic_Nom'],
-            $row['Trousers_Nom'],
-            $row['Description'],
-            $row['Effet'],
-            $row['FK_Cap_Source'],
-            $row['FK_Tunic_Source'],
-            $row['FK_Trousers_Source'],
-            $row['Image_Set']
-        );
-        return $set;  // Return the found set
+    public function readSet($id) {
+        error_log("DBArticleManager.readSet called with ID: " . $id);
+        $db = DBConnection::getInstance();
+    
+        $sql = "SELECT 
+                    s.*, 
+                    cs.Source as cap_source, 
+                    ts.Source as tunic_source,
+                    trs.Source as trousers_source, 
+                    u.Email as creator_email
+                FROM t_set s
+                JOIN t_source cs ON s.FK_Cap_Source = cs.PK_Source
+                JOIN t_source ts ON s.FK_Tunic_Source = ts.PK_Source
+                JOIN t_source trs ON s.FK_Trousers_Source = trs.PK_Source
+                JOIN t_user u ON s.FK_User = u.PK_User
+                WHERE s.PK_Set = :id";
+    
+        try {
+            $result = $db->SelectQuery($sql, array(':id' => $id));
+            error_log("Query result: " . print_r($result, true)); // Log the result to check the structure
+        } catch (Exception $e) {
+            error_log("Error executing query: " . $e->getMessage());
+            return false;
+        }
+    
+        if (count($result) > 0) {
+            $row = $result[0];  // Get the first row
+            $set = new Set(
+                $row['PK_Set'],
+                $row['FK_User'],
+                $row['Nom'],
+                $row['Cap_Nom'],
+                $row['Tunic_Nom'],
+                $row['Trousers_Nom'],
+                $row['Description'],
+                $row['Effet'],
+                $row['FK_Cap_Source'],
+                $row['FK_Tunic_Source'],
+                $row['FK_Trousers_Source'],
+                $row['Image_Set']
+            );
+    
+            return $set;
+        }
+    
+        error_log("No set found for ID: " . $id);
+        return false;
     }
-}
+    
+    
 
 
     /**
@@ -101,7 +110,7 @@ class DBArticleManager
      */
     public function addSet($set)
     {
-        $db = DBConnexion::getInstance();
+        $db = DBConnection::getInstance();
 
         $sql = "INSERT INTO t_set (
                     FK_User, Nom, Cap_Nom, Tunic_Nom, Trousers_Nom,
@@ -139,7 +148,7 @@ class DBArticleManager
      */
     public function updateSet($set)
     {
-        $db = DBConnexion::getInstance();
+        $db = DBConnection::getInstance();
 
         $sql = "UPDATE t_set SET
                     FK_User = :fk_user,
@@ -182,7 +191,7 @@ class DBArticleManager
      */
     public function deleteSet($pk_set)
     {
-        $db = DBConnexion::getInstance();
+        $db = DBConnection::getInstance();
         $sql = "DELETE FROM t_set WHERE PK_Set = :pk_set";
         $rowCount = $db->executeQuery($sql, array('pk_set' => $pk_set));
         return $rowCount > 0;
