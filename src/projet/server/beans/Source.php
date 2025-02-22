@@ -20,14 +20,6 @@ class Source {
     public function setSource($source) { $this->source = $source; }
     public function setTypeSourceId($typeSourceId) { $this->typeSourceId = $typeSourceId; }
 
-    public function toArray() {
-        return [
-            'id' => $this->id,
-            'source' => $this->source,
-            'typeSourceId' => $this->typeSourceId
-        ];
-    }
-
     public function toXML() {
         return '<source>' .
                '<id>' . htmlspecialchars($this->id) . '</id>' .

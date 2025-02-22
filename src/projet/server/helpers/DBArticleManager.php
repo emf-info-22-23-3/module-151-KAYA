@@ -69,9 +69,8 @@ class DBArticleManager
     
         try {
             $result = $db->SelectQuery($sql, array(':id' => $id));
-            error_log("Query result: " . print_r($result, true)); // Log the result to check the structure
         } catch (Exception $e) {
-            error_log("Error executing query: " . $e->getMessage());
+            echo("Error executing query: " . $e->getMessage());
             return false;
         }
     
@@ -95,12 +94,32 @@ class DBArticleManager
             return $set;
         }
     
-        error_log("No set found for ID: " . $id);
+        echo("No set found for ID: " . $id);
+        return false;
+    }
+
+    public function readSourceTypes() {
+        $db = DBConnection::getInstance();
+        $sql = "SELECT PK_type_source, type FROM t_type_source";
+        $result = $db->SelectQuery($sql, array());
+    
+        $sourceTypes = array();
+        
+        if (!empty($result) && is_array($result)) {
+            foreach ($result as $row) {
+                if (isset($row['PK_type_source']) && isset($row['type'])) {
+                    $sourceTypes[] = new SourceType(
+                        $row['PK_type_source'], 
+                        $row['type']);
+                }
+            }
+            return $sourceTypes;
+        }
+    
         return false;
     }
     
     
-
 
     /**
      * Ajoute un nouveau set dans la base de données.

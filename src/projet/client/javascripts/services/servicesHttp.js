@@ -83,13 +83,27 @@ class servicesHttp {
         });
     }
 
-    addSet(successCallback, errorCallback) {
+    getSourceTypes(successCallback, errorCallback) {
+        $.ajax({
+            type: "GET",
+            dataType: "xml",
+            url: this.BASE_URL,
+            data: {
+                action: 'getSourceTypes',
+            },
+            success: successCallback,
+            error: errorCallback
+        });
+    }
+
+    addSet(data, successCallback, errorCallback) {
         $.ajax({
             type: "POST",
             dataType: "xml",
             url: this.BASE_URL,
             data: {
                 action: 'add',
+                data: data
             },
             success: successCallback,
             error: errorCallback

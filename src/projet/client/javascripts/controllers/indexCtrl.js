@@ -79,40 +79,81 @@ class IndexCtrl {
         });
     }
 
-     getAnnoncesSuccess(response) {
-        console.log("Raw response:", response);
+    getAnnoncesSuccess(response) {
+        console.log("Raw responseAAAAAAAAAAAAA:", response);
     
         // Convert string response to XML if necessary
         var parser = new DOMParser();
         var xmlDoc = parser.parseFromString(response, "application/xml");
     
-        var setElement = xmlDoc.querySelector('set');
-        console.log("Set element found:", setElement !== null);
-        console.log("Set element content:", setElement ? setElement.innerHTML : 'No content');
+        // Get all <set> elements
+        var sets = xmlDoc.querySelectorAll('set');
+        console.log("Total <set> tags found:", sets.length);
     
-        if (setElement && setElement.innerHTML.trim() !== '') {
-            // Now process the set data
-            var pkSet = setElement.querySelector('pk_set').textContent;
-            var nom = setElement.querySelector('nom').textContent;
-            var capNom = setElement.querySelector('cap_nom').textContent;
-            var tunicNom = setElement.querySelector('tunic_nom').textContent;
-            var trousersNom = setElement.querySelector('trousers_nom').textContent;
-            var description = setElement.querySelector('description').textContent;
-            var effet = setElement.querySelector('effet').textContent;
-            var imageSet = setElement.querySelector('image_set').textContent;
+        // Check if there is at least one <set> tag
+        if (sets.length > 0) {
+            var setElement = sets[sets.length - 1]; // Get the last <set> element (could be the second one if that's the one you want)
+            console.log("Using <set> element:", setElement);
     
-            // Do something with the extracted data (e.g., display it)
-            console.log("Armor Set Data:", {
-                pkSet, nom, capNom, tunicNom, trousersNom, description, effet, imageSet
-            });
+            // Ensure the <set> element is not empty
+            if (setElement && setElement.innerHTML.trim() !== '') {
+                var pkSet = setElement.querySelector('pk_set').textContent;
+                var nom = setElement.querySelector('nom').textContent;
+                var capNom = setElement.querySelector('cap_nom').textContent;
+                var tunicNom = setElement.querySelector('tunic_nom').textContent;
+                var trousersNom = setElement.querySelector('trousers_nom').textContent;
+                var description = setElement.querySelector('description').textContent;
+                var effet = setElement.querySelector('effet').textContent;
+                var imageSet = setElement.querySelector('image_set').textContent;
+    
+                console.log("Armor Set Data:", {
+                    pkSet, nom, capNom, tunicNom, trousersNom, description, effet, imageSet
+                });
+    
+                // Populate the form fields with the received data
+                $("#armorName").val(nom);
+                $("#armorCapName").val(capNom);
+                $("#armorTunicName").val(tunicNom);
+                $("#armorTrousersName").val(trousersNom);
+                $("#armorEffect").val(effet);
+                $("#armorDescription").val(description);
+    
+                // Set the source type dropdowns
+                //$("#armorCapSourceType").val(setElement.querySelector('fk_cap_source').textContent);
+                //$("#armorTunicSourceType").val(setElement.querySelector('fk_tunic_source').textContent);
+                //$("#armorTrousersSourceType").val(setElement.querySelector('fk_trousers_source').textContent);
+    
+                // Show a success toast
+                Toastify({
+                    text: "Armor set details loaded successfully",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#33cc33"
+                }).showToast();
+            } else {
+                console.error("Empty <set> data found in response");
+                Toastify({
+                    text: "Error: Armor set data is empty",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#ff3333"
+                }).showToast();
+            }
         } else {
-            console.log("No set data found in response");
+            console.error("No <set> element found in response");
+            Toastify({
+                text: "Error: Could not load armor set details",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#ff3333"
+            }).showToast();
         }
     }
-    
 
     CallbackError(request, status, error) {
-        console.log("Error:", error);
         Toastify({
             text: "Error: " + error,
             duration: 3000,
@@ -141,4 +182,9 @@ $(document).ready(function () {
         console.log("Loading armor names");
         window.ctrl.http.getArmorNames(window.ctrl.getArmorNamesSuccess, window.ctrl.CallbackError);
     }
+
+    $("#addButton").on("click", function () {
+        console.log("Add button clicked, navigating to add.html");
+        window.location.href = "../views/add.html"; 
+    });
 });

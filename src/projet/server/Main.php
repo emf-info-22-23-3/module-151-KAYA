@@ -9,6 +9,7 @@ require_once 'helpers/DBConnection.php';
 require_once 'beans/Set.php';
 require_once 'beans/Source.php';
 require_once 'beans/User.php';
+require_once 'beans/SourceType.php';
 
 session_start();
 
@@ -24,8 +25,7 @@ session_start();
  * @param array $data Optional data to include in response
  */
 function sendXMLResponse($success, $message = '', $data = null) {
-    header('Content-Type: text/xml; charset=UTF-8');
-    echo "<?xml version='1.0' encoding='UTF-8'?>\n";
+
     echo "<response>\n";
     echo "  <success>" . ($success ? 'true' : 'false') . "</success>\n";
     
@@ -34,36 +34,86 @@ function sendXMLResponse($success, $message = '', $data = null) {
     }
     
     if ($data) {
-        foreach ($data as $key => $items) {
-            // Start the container element (e.g., <armorNames>)
-            echo "  <" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
+        if (isset($data['set'])) {
+            // Handle the case where 'set' is an associative array
+            $set = $data['set'];
+            echo "  <set>\n";
+            foreach ($set as $key => $value) {
+                echo "    <" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">" 
+                     . htmlspecialchars($value, ENT_XML1, 'UTF-8') 
+                     . "</" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
+            }
+            echo "  </set>\n";
+        } 
+        
+        if (isset($data['sourceTypes']) && is_array($data['sourceTypes']) && count($data['sourceTypes']) > 0) {
+            echo "  <sourceTypes>\n";
             
-            if (is_array($items)) {
-                foreach ($items as $item) {
-                    if (is_object($item) && method_exists($item, 'toXML')) {
-                        // If it's an object with toXML method, use that
-                        echo "    " . $item->toXML() . "\n";
-                    } else if (is_array($item)) {
-                        // If it's an array (like your armor names), create an element
-                        echo "    <armor>\n";
-                        foreach ($item as $itemKey => $itemValue) {
-                            echo "      <" . htmlspecialchars($itemKey, ENT_XML1, 'UTF-8') . ">" 
-                                . htmlspecialchars($itemValue, ENT_XML1, 'UTF-8') 
-                                . "</" . htmlspecialchars($itemKey, ENT_XML1, 'UTF-8') . ">\n";
+            // Loop through the sourceTypes array
+            foreach ($data as $key => $items) {
+                // Start the container element (e.g., <armorNames>)
+                echo "  <" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
+                if (is_array($items)) {
+                    foreach ($items as $item) {
+                        if (is_array($item)) {
+                            echo "    <sourceTypes>\n";
+                            foreach ($item as $itemKey => $itemValue) {
+                               echo "      <" . htmlspecialchars($itemKey, ENT_XML1, 'UTF-8') . ">" 
+                                    . htmlspecialchars($itemValue, ENT_XML1, 'UTF-8') 
+                                    . "</" . htmlspecialchars($itemKey, ENT_XML1, 'UTF-8') . ">\n";
+                            }
+                            echo "    </sourceTypes>\n";
                         }
-                        echo "    </armor>\n";
                     }
                 }
+                // Close the container element
+                echo "  </" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
             }
             
-            // Close the container element
-            echo "  </" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
+            echo "  </sourceTypes>\n";
+
+        } else {
+            foreach ($data as $key => $items) {
+                // Start the container element (e.g., <armorNames>)
+                echo "  <" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
+                if (is_array($items)) {
+                    foreach ($items as $item) {
+                        if (is_array($item)) {
+                            foreach ($item as $itemKey => $itemValue) {
+                               echo "      <" . htmlspecialchars($itemKey, ENT_XML1, 'UTF-8') . ">" 
+                                    . htmlspecialchars($itemValue, ENT_XML1, 'UTF-8') 
+                                    . "</" . htmlspecialchars($itemKey, ENT_XML1, 'UTF-8') . ">\n";
+                            }
+                        }
+                    }
+                }
+                // Close the container element
+                echo "  </" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
+            }
+        }
+
+        echo "</response>";
+        exit;
+    }
+}
+
+function sendXMLResponseLogin($success, $message = '', $data = null) {
+    header('Content-Type: text/xml');
+    echo "<?xml version='1.0' encoding='UTF-8'?>\n";
+    echo "<response>\n";
+    echo "  <success>" . ($success ? 'true' : 'false') . "</success>\n";
+    if ($message) {
+        echo "  <message>" . htmlspecialchars($message) . "</message>\n";
+    }
+    if ($data) {
+        foreach ($data as $key => $value) {
+            echo "  <" . htmlspecialchars($key) . ">" . htmlspecialchars($value) . "</" . htmlspecialchars($key) . ">\n";
         }
     }
-    
     echo "</response>";
     exit;
 }
+
 
 // Consistent session handling functions
 function isLoggedIn() {
@@ -102,19 +152,19 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 $user = $userManager->checkCredentials($email, $password);
                 if ($user) {
                     login($user);
-                    sendXMLResponse(true, 'Login successful', [
+                    sendXMLResponseLogin(true, 'Login successful', [
                         'isAdmin' => $user->getRole() === 'Administrator' ? 'true' : 'false',
                         'email' => $user->getEmail(),
                         'role' => $user->getRole()
                     ]);
                 } else {
-                    sendXMLResponse(false, 'Invalid credentials');
+                    sendXMLResponseLogin(false, 'Invalid credentials');
                 }
                 break;
 
             case 'disconnect':
                 logout();
-                sendXMLResponse(true, 'Logout successful');
+                sendXMLResponseLogout(true, 'Logout successful');
                 break;
 
             case 'addSet':
@@ -162,19 +212,21 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 }
             
                 $id = $_GET['id'] ?? '';
-                error_log("getAnnoncesForArmor called with ID: " . $id);
-                
+            
                 $set = $articleManager->getSet($id);
-                error_log("Set returned from getSet: " . ($set ? "not null" : "null"));
-                
                 if ($set) {
-                    error_log("Set XML: " . $set->toXML());
+                    // If the set is valid, send the XML response
+                    echo ("Fetched Set: " . print_r($set, true));
                     sendXMLResponse(true, '', ['set' => $set]);
+                    break;
                 } else {
-                    error_log("No set found for ID: " . $id);
+                    // Handle case where set is not found
                     sendXMLResponse(false, 'Set not found');
+                    break;
                 }
+            
                 break;
+            
             case 'getArmorNames':
                 if (!isLoggedIn()) {
                     sendXMLResponse(false, 'Please log in first');
@@ -182,7 +234,36 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 }
                 
                 $armorNames = $articleManager->getArmorNames();
-                sendXMLResponse(true, '', array('armorNames' => $armorNames));
+                if ($armorNames) {
+                    sendXMLResponse(true, '', array('armorNames' => $armorNames));
+                    break;
+                } else {
+                    // Handle case where set is not found
+                    sendXMLResponse(false, 'armorNames not found');
+                    break;
+                }
+
+                break;
+
+            case 'getSourceTypes':
+
+                if (!isLoggedIn()) {
+                    sendXMLResponse(false, 'Please log in first');
+                    break;
+                }
+
+                $sourceTypes = $articleManager->getSourceTypes();
+                if ($sourceTypes) {
+                    sendXMLResponse(true, 'sourceTypes found', array('sourceTypes' => $sourceTypes));
+                    //echo("Source types found: " . print_r($sourceTypes, true));
+                    break;
+                } else {
+                    // Handle case where set is not found
+                    //echo("Source types not found: " . print_r($sourceTypes, true));
+                    sendXMLResponse(false, 'sourceTypes not found');
+                    break;
+                }
+
                 break;
         }
 
