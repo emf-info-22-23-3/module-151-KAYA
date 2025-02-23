@@ -43,6 +43,41 @@ function sendXMLResponse($success, $message = '', $data = null) {
                      . htmlspecialchars($value, ENT_XML1, 'UTF-8') 
                      . "</" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
             }
+            
+            // Now handle the sources inside the set
+            if (isset($data['CapSource'])) {
+                $CapSource = $data['CapSource'];
+                echo "    <CapSource>\n";
+                foreach ($CapSource as $key => $value) {
+                    echo "      <" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">" 
+                         . htmlspecialchars($value, ENT_XML1, 'UTF-8') 
+                         . "</" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
+                }
+                echo "    </CapSource>\n";
+            }
+
+            if (isset($data['TunicSource'])) {
+                $TunicSource = $data['TunicSource'];
+                echo "    <TunicSource>\n";
+                foreach ($TunicSource as $key => $value) {
+                    echo "      <" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">" 
+                         . htmlspecialchars($value, ENT_XML1, 'UTF-8') 
+                         . "</" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
+                }
+                echo "    </TunicSource>\n";
+            }
+
+            if (isset($data['TrousersSource'])) {
+                $TrousersSource = $data['TrousersSource'];
+                echo "    <TrousersSource>\n";
+                foreach ($TrousersSource as $key => $value) {
+                    echo "      <" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">" 
+                         . htmlspecialchars($value, ENT_XML1, 'UTF-8') 
+                         . "</" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
+                }
+                echo "    </TrousersSource>\n";
+            }
+
             echo "  </setWanted>\n";
         } 
         
@@ -339,20 +374,47 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 }
             
                 $id = $_GET['id'] ?? '';
-            
                 $set = $articleManager->getSet($id);
+
                 if ($set) {
-                    // If the set is valid, send the XML response
-                    echo ("Fetched Set: " . print_r($set, true));
-                    sendXMLResponse(true, '', ['set' => $set]);
+
+                    $setData = array(
+                        'id' => $set->getPkSet(),
+                        'name' => $set->getNom(),
+                        'cap_name' => $set->getCapNom(),
+                        'tunic_name' => $set->getTunicNom(),
+                        'trousers_name' => $set->getTrousersNom(),
+                        'description' => $set->getDescription(),
+                        'effect' => $set->getEffet(),
+                        'cap_source' => $set->getFkCapSource(),
+                        'tunic_source' => $set->getFkTunicSource(),
+                        'trousers_source' => $set->getFkTrousersSource(),
+                        'image' => $set->getImageSet()
+                    )
+
+                    // Retrieve the Source objects using foreign keys (assuming FK_Type_Source for each)
+                    $CapSource = $articleManager->readSourceByID($set->getFkCapSource()); 
+                    $TunicSource = $articleManager->readSourceByID($set->getFkTunicSource()); 
+                    $TrousersSource = $articleManager->readSourceByID($set->getFkTrousersSource()); 
+            
+                    // Prepare the response array with the set and source objects
+                    $response = [
+                        'set' => $setData,
+                        'CapSource' => $CapSource ? $CapSource : null,  // Null if not found
+                        'TunicSource' => $TunicSource ? $TunicSource : null,  // Null if not found
+                        'TrousersSource' => $TrousersSource ? $TrousersSource : null   // Null if not found
+                    ];
+            
+                    // Send the response with the set and the source objects
+                    sendXMLResponse(true, '', $response);
                     break;
                 } else {
                     // Handle case where set is not found
                     sendXMLResponse(false, 'Set not found');
                     break;
                 }
-            
                 break;
+            
             
             case 'getArmorNames':
                 if (!isLoggedIn()) {

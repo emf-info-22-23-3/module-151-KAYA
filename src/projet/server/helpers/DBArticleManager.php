@@ -50,6 +50,28 @@ class DBArticleManager
         return $sets;
     }
 
+    //needs to return the id based on the sourceName and sourceTypeName
+    public function readSourceByID($sourceID)
+    {
+        $db = DBConnection::getInstance();
+
+        $sql = "SELECT * FROM t_source WHERE PK_Source = :sourceID";
+
+        $result = $db->SelectQuery($sql, array(':sourceID' => $sourceID));
+
+        if (count($result) > 0) {
+            $row = $result[0];
+            $source = new Source(
+                $row['PK_Source'], 
+                $row['Source'], 
+                $row['FK_type_source']
+            );
+            return $source;
+        }
+
+        return false;
+    }
+
     public function readSet($id) 
     {
         $db = DBConnection::getInstance();
@@ -71,7 +93,7 @@ class DBArticleManager
     
         if (count($result) > 0) {
             $row = $result[0];  // Get the first row
-            $set = new Set(
+            return new Set(
                 $row['PK_Set'],
                 $row['FK_User'],
                 $row['Nom'],
@@ -85,8 +107,6 @@ class DBArticleManager
                 $row['FK_Trousers_Source'],
                 $row['Image_Set']
             );
-    
-            return $set;
         }
     
         return false;
@@ -176,53 +196,6 @@ class DBArticleManager
         return $db->getLastId("t_source");
     }
 
-    /*
-
-    /**
-     * Met à jour un set existant dans la base de données.
-     *
-     * @param Set $set Le set à modifier
-     * @return bool true si la mise à jour a réussi, false sinon
-     
-    public function updateSet($set)
-    {
-        $db = DBConnection::getInstance();
-
-        $sql = "UPDATE t_set SET
-                    FK_User = :fk_user,
-                    Nom = :nom,
-                    Cap_Nom = :cap_nom,
-                    Tunic_Nom = :tunic_nom,
-                    Trousers_Nom = :trousers_nom,
-                    Description = :description,
-                    Effet = :effet,
-                    FK_Cap_Source = :fk_cap_source,
-                    FK_Tunic_Source = :fk_tunic_source,
-                    FK_Trousers_Source = :fk_trousers_source,
-                    Image_Set = :image_set
-                WHERE PK_Set = :pk_set";
-
-        $params = array(
-            'pk_set' => $set->getPkSet(),
-            'fk_user' => $set->getFkUser(),
-            'nom' => $set->getNom(),
-            'cap_nom' => $set->getCapNom(),
-            'tunic_nom' => $set->getTunicNom(),
-            'trousers_nom' => $set->getTrousersNom(),
-            'description' => $set->getDescription(),
-            'effet' => $set->getEffet(),
-            'fk_cap_source' => $set->getFkCapSource(),
-            'fk_tunic_source' => $set->getFkTunicSource(),
-            'fk_trousers_source' => $set->getFkTrousersSource(),
-            'image_set' => $set->getImageSet()
-        );
-
-        $rowCount = $db->executeQuery($sql, $params);
-        return $rowCount > 0;
-    }
-
-    */
-
     public function updateSource($sourcePk, $source, $typeSourceId)
     {
         $db = DBConnection::getInstance();
@@ -290,31 +263,33 @@ class DBArticleManager
         return $db->executeQuery($sql, $params);
     }
 
-
-    /**
-     * Supprime un set de la base de données.
-     *
-     * @param int $pk_set L'ID du set à supprimer
-     * @return bool true si la suppression a réussi, false sinon
-     */
     public function deleteSource($idCapSource, $idTunicSource, $idTrousersSource)
     {
         $db = DBConnection::getInstance();
 
-        // SQL to delete the sources
-        $sqlCap = "DELETE FROM t_source WHERE PK_Source = :pk_source";
-        $sqlTunic = "DELETE FROM t_source WHERE PK_Source = :pk_source";
-        $sqlTrousers = "DELETE FROM t_source WHERE PK_Source = :pk_source";
+        // SQL query to retrieve the source ID based on sourceName and sourceTypeName
+        $sql = "SELECT s.PK_Source
+                ROM t_source s
+                JOIN t_type_source ts ON s.FK_Type_Source = ts.PK_type_source
+                WHERE s.Source = :source_name AND ts.type = :source_type_name";
 
-        // Execute the delete queries
-        $capDeleted = $db->executeQuery($sqlCap, array('pk_source' => $idCapSource));
-        $tunicDeleted = $db->executeQuery($sqlTunic, array('pk_source' => $idTunicSource));
-        $trousersDeleted = $db->executeQuery($sqlTrousers, array('pk_source' => $idTrousersSource));
+        // Parameters to bind
+        $params = array(
+            'source_name' => $sourceName,
+            'source_type_name' => $sourceTypeName
+        );
 
-        // Return true if all sources were deleted
-        return $capDeleted && $tunicDeleted && $trousersDeleted;
-    }
+        // Execute the query
+        $result = $db->SelectQuery($sql, $params);
 
+        // If result is found, return the source ID
+        if (count($result) > 0) {
+            return $result[0]['PK_Source'];
+        }
+
+        // If no result, return false
+        return false;
+}
 
     public function deleteSet($idSet, $idCapSource, $idTunicSource, $idTrousersSource)
     {

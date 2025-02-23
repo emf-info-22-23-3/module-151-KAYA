@@ -32,30 +32,13 @@ class ArticleManager {
         return $armorNames;
     }
 
+    public function readSourceByID($sourceID){
+        return $this->dbArticleManager->readSourceByID($sourceID);
+    }
+
     public function getSet($id) {
         echo ("ArticleManager.getSet called with ID: " . $id);
-        $set = $this->dbArticleManager->readSet($id);
-        echo ("DBArticleManager.readSet returned: " . ($set ? "not null" : "null"));
-        
-        if ($set) {
-            // Returning a flat structure of the set
-            $setData = array(
-                'id' => $set->getPkSet(),
-                'name' => $set->getNom(),
-                'cap_name' => $set->getCapNom(),
-                'tunic_name' => $set->getTunicNom(),
-                'trousers_name' => $set->getTrousersNom(),
-                'description' => $set->getDescription(),
-                'effect' => $set->getEffet(),
-                'cap_source' => $set->getFkCapSource(),
-                'tunic_source' => $set->getFkTunicSource(),
-                'trousers_source' => $set->getFkTrousersSource(),
-                'image' => $set->getImageSet()
-            );
-            return $setData;
-        } else {
-            return false;
-        }
+        return $this->dbArticleManager->readSet($id);
     }
 
     public function getSourceTypes() {
