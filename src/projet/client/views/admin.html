@@ -38,7 +38,7 @@
         <div class="form-group">
             <label for="armorNameSelect">Select Armor:</label>
             <div class="source-group">
-                <select id="armorNameSelect">$
+                <select id="armorNameSelect">
                     <!-- Armor names will be populated here -->
                 </select>
             </div>
@@ -102,19 +102,6 @@
             </form>
         </div>
     </main>
-
-    <script>
-        document.getElementById('addArmorForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            Toastify({
-                text: "Armor set saved successfully!",
-                duration: 3000,
-                gravity: "top",
-                position: "right",
-                backgroundColor: "green"
-            }).showToast();
-        });
-    </script>
 </body>
 
 </html>

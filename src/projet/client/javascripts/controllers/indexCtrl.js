@@ -1,7 +1,6 @@
 class IndexCtrl {
     constructor() {
         this.http = new servicesHttp();
-        // Bind the methods to preserve 'this' context
         this.connectSuccess = this.connectSuccess.bind(this);
         this.CallbackError = this.CallbackError.bind(this);
         this.getArmorNamesSuccess = this.getArmorNamesSuccess.bind(this);
@@ -79,32 +78,34 @@ class IndexCtrl {
         });
     }
 
-    getAnnoncesSuccess(response) {
-        console.log("Raw responseAAAAAAAAAAAAA:", response);
+    getAnnoncesSuccess(data) {
+        console.log("getAnnoncesSuccess called");
+        console.log("Received data:", data);
     
-        // Convert string response to XML if necessary
-        var parser = new DOMParser();
-        var xmlDoc = parser.parseFromString(response, "application/xml");
+        // Check if data is a string and parse it if necessary
+        if (typeof data === "string") {
+            console.log("Data is a string, attempting to parse...");
+            data = $.parseXML(data);  // Convert string to XML document
+        }
     
-        // Get all <set> elements
-        var sets = xmlDoc.querySelectorAll('set');
-        console.log("Total <set> tags found:", sets.length);
+        const $xml = $(data);  // jQuery-wrapped XML document
     
-        // Check if there is at least one <set> tag
-        if (sets.length > 0) {
-            var setElement = sets[sets.length - 1]; // Get the last <set> element (could be the second one if that's the one you want)
-            console.log("Using <set> element:", setElement);
+        // Find all <set> elements inside the response
+        const setWanted = $xml.find("response setWanted");
     
-            // Ensure the <set> element is not empty
-            if (setElement && setElement.innerHTML.trim() !== '') {
-                var pkSet = setElement.querySelector('pk_set').textContent;
-                var nom = setElement.querySelector('nom').textContent;
-                var capNom = setElement.querySelector('cap_nom').textContent;
-                var tunicNom = setElement.querySelector('tunic_nom').textContent;
-                var trousersNom = setElement.querySelector('trousers_nom').textContent;
-                var description = setElement.querySelector('description').textContent;
-                var effet = setElement.querySelector('effet').textContent;
-                var imageSet = setElement.querySelector('image_set').textContent;
+        console.log("Found <set> elements:", setWanted.length);
+    
+        // Check if there are any valid <set> elements
+        if (setWanted.length > 0) {
+            setWanted.each(function() {
+                const pkSet = $(this).find("id").text();  // Get the id
+                const nom = $(this).find("name").text();  // Get the name
+                const capNom = $(this).find("cap_name").text();  // Get the cap_name
+                const tunicNom = $(this).find("tunic_name").text();  // Get the tunic_name
+                const trousersNom = $(this).find("trousers_name").text();  // Get the trousers_name
+                const description = $(this).find("description").text();  // Get the description
+                const effet = $(this).find("effect").text();  // Get the effect
+                const imageSet = $(this).find("image").text();  // Get the image
     
                 console.log("Armor Set Data:", {
                     pkSet, nom, capNom, tunicNom, trousersNom, description, effet, imageSet
@@ -119,11 +120,11 @@ class IndexCtrl {
                 $("#armorDescription").val(description);
     
                 // Set the source type dropdowns
-                //$("#armorCapSourceType").val(setElement.querySelector('fk_cap_source').textContent);
-                //$("#armorTunicSourceType").val(setElement.querySelector('fk_tunic_source').textContent);
-                //$("#armorTrousersSourceType").val(setElement.querySelector('fk_trousers_source').textContent);
+                $("#armorCapSourceType").append($(this).find('cap_source').text());
+                $("#armorTunicSourceType").append($(this).find('tunic_source').text());
+                $("#armorTrousersSourceType").append($(this).find('trousers_source').text());
     
-                // Show a success toast
+                // Show success toast
                 Toastify({
                     text: "Armor set details loaded successfully",
                     duration: 3000,
@@ -131,20 +132,10 @@ class IndexCtrl {
                     position: "right",
                     backgroundColor: "#33cc33"
                 }).showToast();
-            } else {
-                console.error("Empty <set> data found in response");
-                Toastify({
-                    text: "Error: Armor set data is empty",
-                    duration: 3000,
-                    gravity: "top",
-                    position: "right",
-                    backgroundColor: "#ff3333"
-                }).showToast();
-            }
+            });
         } else {
-            console.error("No <set> element found in response");
             Toastify({
-                text: "Error: Could not load armor set details",
+                text: "No armor sets found",
                 duration: 3000,
                 gravity: "top",
                 position: "right",
@@ -153,6 +144,106 @@ class IndexCtrl {
         }
     }
 
+    getSourceTypesSuccess(data) {
+        console.log("getSourceTypesSuccess called");
+        console.log("Received data:", data);
+    
+        // Check if data is a string and parse it if necessary
+        if (typeof data === "string") {
+            console.log("Data is a string, attempting to parse...");
+            data = $.parseXML(data);  // Convert string to XML document
+        }
+    
+        const $xml = $(data);  // jQuery-wrapped XML document
+    
+        // Log the entire parsed XML structure
+        //console.log("Parsed XML:", $xml);
+    
+        // Find the deepest sourceTypes (those that contain pk_type_source and type)
+        const sourceTypes = $xml.find("response sourceTypes sourceTypes sourceType");
+    
+        console.log("Found source types:", sourceTypes.length);
+    
+        if (sourceTypes.length > 0) {
+            sourceTypes.each(function() {
+                const value = $(this).find("pk_type_source").text();  // Get pk_type_source
+                const label = $(this).find("type").text();  // Get type (label)
+    
+                console.log("Found source type:", label);
+    
+                // Populate each of the source type selects
+                $("#armorCapSourceType").append(`<option value="${value}">${label}</option>`);
+                $("#armorTunicSourceType").append(`<option value="${value}">${label}</option>`);
+                $("#armorTrousersSourceType").append(`<option value="${value}">${label}</option>`);
+            });
+            Toastify({
+                text: "Source types loaded successfully",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#33cc33"
+            }).showToast();
+        } else {
+            Toastify({
+                text: "No source types found",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#ff3333"
+            }).showToast();
+        }
+    }
+
+    updateSetSuccess(response) {
+        const successElement = $(response).find('success').text();
+        
+        if (successElement === "true") {
+            Toastify({
+                text: "Armor set added successfully!",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "green"
+            }).showToast();
+            // Reset the form after success
+            document.getElementById('addArmorForm').reset();
+        } else {
+            Toastify({
+                text: "Failed to modify armor set. Please try again.",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "red"
+            }).showToast();
+        }
+    }
+
+    collectFormData() {
+        const formData = new FormData();
+    
+        // Collect data from form inputs
+        formData.append("armorName", $("#armorName").val());  // Replace with actual input field ID
+        formData.append("armorCapName", $("#armorCapName").val());
+        formData.append("armorCapSourceType", $("#armorCapSourceType").val());
+        formData.append("armorCapSource", $("#armorCapSource").val());
+        formData.append("armorTunicName", $("#armorTunicName").val());
+        formData.append("armorTunicSourceType", $("#armorTunicSourceType").val());
+        formData.append("armorTunicSource", $("#armorTunicSource").val());
+        formData.append("armorTrousersName", $("#armorTrousersName").val());
+        formData.append("armorTrousersSourceType", $("#armorTrousersSourceType").val());
+        formData.append("armorTrousersSource", $("#armorTrousersSource").val());
+        formData.append("armorEffect", $("#armorEffect").val());
+        formData.append("armorDescription", $("#armorDescription").val());
+    
+        // If there's a file, append it
+        const fileInput = $("#armorImage")[0];
+        if (fileInput && fileInput.files[0]) {
+            formData.append("armorImage", fileInput.files[0]);
+        }
+    
+        return formData;
+    }
+    
     CallbackError(request, status, error) {
         Toastify({
             text: "Error: " + error,
@@ -186,5 +277,14 @@ $(document).ready(function () {
     $("#addButton").on("click", function () {
         console.log("Add button clicked, navigating to add.html");
         window.location.href = "../views/add.html"; 
+    });
+
+    $("#modifyButton").on("click", function () {
+        console.log("Add button clicked, navigating to modify.html");
+        window.location.href = "../views/modify.html"; 
+        console.log("Loading source types");
+        window.ctrl.http.getSourceTypes(window.ctrl.getSourceTypesSuccess, window.ctrl.callbackError);
+        const data = window.ctrl.collectFormData();
+        window.ctrl.http.addSet(data, window.ctrl.addSetSuccess, window.ctrl.callbackError);
     });
 });

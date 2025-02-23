@@ -37,13 +37,13 @@ function sendXMLResponse($success, $message = '', $data = null) {
         if (isset($data['set'])) {
             // Handle the case where 'set' is an associative array
             $set = $data['set'];
-            echo "  <set>\n";
+            echo "  <setWanted>\n";
             foreach ($set as $key => $value) {
                 echo "    <" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">" 
                      . htmlspecialchars($value, ENT_XML1, 'UTF-8') 
                      . "</" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
             }
-            echo "  </set>\n";
+            echo "  </setWanted>\n";
         } 
         
         if (isset($data['sourceTypes']) && is_array($data['sourceTypes']) && count($data['sourceTypes']) > 0) {
@@ -51,18 +51,18 @@ function sendXMLResponse($success, $message = '', $data = null) {
             
             // Loop through the sourceTypes array
             foreach ($data as $key => $items) {
-                // Start the container element (e.g., <armorNames>)
+                // Start the container element (e.g., <sourceTypes>)
                 echo "  <" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
                 if (is_array($items)) {
                     foreach ($items as $item) {
                         if (is_array($item)) {
-                            echo "    <sourceTypes>\n";
+                            echo "    <sourceType>\n";
                             foreach ($item as $itemKey => $itemValue) {
                                echo "      <" . htmlspecialchars($itemKey, ENT_XML1, 'UTF-8') . ">" 
                                     . htmlspecialchars($itemValue, ENT_XML1, 'UTF-8') 
                                     . "</" . htmlspecialchars($itemKey, ENT_XML1, 'UTF-8') . ">\n";
                             }
-                            echo "    </sourceTypes>\n";
+                            echo "    </sourceType>\n";
                         }
                     }
                 }
@@ -79,11 +79,13 @@ function sendXMLResponse($success, $message = '', $data = null) {
                 if (is_array($items)) {
                     foreach ($items as $item) {
                         if (is_array($item)) {
+                            echo "    <armor>\n";
                             foreach ($item as $itemKey => $itemValue) {
                                echo "      <" . htmlspecialchars($itemKey, ENT_XML1, 'UTF-8') . ">" 
                                     . htmlspecialchars($itemValue, ENT_XML1, 'UTF-8') 
                                     . "</" . htmlspecialchars($itemKey, ENT_XML1, 'UTF-8') . ">\n";
                             }
+                            echo "    </armor>\n";
                         }
                     }
                 }
@@ -143,6 +145,7 @@ $articleManager = new ArticleManager();
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'POST':
         $action = $_POST['action'] ?? '';
+        echo "Action: $action\n";  // Debugging the received action (add this for debugging)
         
         switch($action) {
             case 'login':
@@ -167,34 +170,98 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 sendXMLResponseLogout(true, 'Logout successful');
                 break;
 
-            case 'addSet':
-                if (!isLoggedIn()) {
-                    sendXMLResponse(false, 'Please log in first');
+                case 'addSet':
+                    if (!isLoggedIn()) {
+                        sendXMLResponse(false, 'Please log in first');
+                        break;
+                    }
+                
+                    if (!isAdmin()) {
+                        sendXMLResponse(false, 'Administrator access required');
+                        break;
+                    }
+                    // Collecting form data
+    $armorName = $_POST['armorName'] ?? '';
+    echo "Armor Name: $armorName\n";  // Debugging armor name
+    $armorCapName = $_POST['armorCapName'] ?? '';
+    echo "Cap Name: $armorCapName\n";  // Debugging cap name
+    $armorTunicName = $_POST['armorTunicName'] ?? '';
+    echo "Tunic Name: $armorTunicName\n";  // Debugging tunic name
+    $armorTrousersName = $_POST['armorTrousersName'] ?? '';
+    echo "Trousers Name: $armorTrousersName\n";  // Debugging trousers name
+    $armorEffect = $_POST['armorEffect'] ?? '';
+    echo "Effect: $armorEffect\n";  // Debugging effect
+    $armorDescription = $_POST['armorDescription'] ?? '';
+    echo "Description: $armorDescription\n";  // Debugging description
+
+    // Collecting source type and source values
+    $armorCapSourceType = $_POST['armorCapSourceType'] ?? '';
+    echo "Cap Source Type: $armorCapSourceType\n";  // Debugging cap source type
+    $armorCapSource = $_POST['armorCapSource'] ?? '';
+    echo "Cap Source: $armorCapSource\n";  // Debugging cap source
+    $armorTunicSourceType = $_POST['armorTunicSourceType'] ?? '';
+    echo "Tunic Source Type: $armorTunicSourceType\n";  // Debugging tunic source type
+    $armorTunicSource = $_POST['armorTunicSource'] ?? '';
+    echo "Tunic Source: $armorTunicSource\n";  // Debugging tunic source
+    $armorTrousersSourceType = $_POST['armorTrousersSourceType'] ?? '';
+    echo "Trousers Source Type: $armorTrousersSourceType\n";  // Debugging trousers source type
+    $armorTrousersSource = $_POST['armorTrousersSource'] ?? '';
+    echo "Trousers Source: $armorTrousersSource\n";  // Debugging trousers source
+                
+                    // Handling the uploaded image (if exists)
+                    if (isset($_FILES['armorImage']) && $_FILES['armorImage']['error'] === UPLOAD_ERR_OK) {
+                        $imageTempPath = $_FILES['armorImage']['tmp_name'];
+                        $imageName = $_FILES['armorImage']['name'];
+                        $imagePath = 'uploads/' . $imageName;
+                        move_uploaded_file($imageTempPath, $imagePath);
+                    } else {
+                        $imagePath = ''; // Or handle the case where no image was uploaded
+                    }
+
+                    $armorCapSourceNew = new Source(
+                        null,
+                        $armorCapSource,
+                        $armorCapSourceType
+                    );
+
+                    $armorTunicSourceNew = new Source(
+                        null,
+                        $armorTunicSource,
+                        $armorTunicSourceType
+                    );
+
+                    $armorTrousersSourceNew = new Source(
+                        null,
+                        $armorTrousersSource,
+                        $armorTrousersSourceType
+                    );
+
+                    // Create threee Source object with the sourceType data and source data
+                    $armorCapSourceId = $articleManager->addSource($armorCapSourceNew);
+                    $armorTunicSourceId = $articleManager->addSource($armorTunicSourceNew);
+                    $armorTrousersSourceId = $articleManager->addSource($armorTrousersSourceNew);
+                
+                    // Create a Set object with the collected data
+                    $set = new Set(
+                        null,
+                        $_SESSION['user_id'],
+                        $armorName,
+                        $armorCapName,
+                        $armorTunicName,
+                        $armorTrousersName,
+                        $armorDescription,
+                        $armorEffect,
+                        $armorCapSourceId,
+                        $armorTunicSourceId,
+                        $armorTrousersSourceId,
+                        $imagePath
+                    );
+                
+                    // Call the manager to add the set
+                    $result = $articleManager->addSet($set);
+                
+                    sendXMLResponse($result !== false, $result ? 'Set added successfully' : 'Failed to add set');
                     break;
-                }
-
-                if (!isAdmin()) {
-                    sendXMLResponse(false, 'Administrator access required');
-                    break;
-                }
-
-                $set = new Set(
-                    null,
-                    $_SESSION['user_id'],
-                    $_POST['nom'] ?? '',
-                    $_POST['cap_nom'] ?? '',
-                    $_POST['tunic_nom'] ?? '',
-                    $_POST['trousers_nom'] ?? '',
-                    $_POST['description'] ?? '',
-                    $_POST['effet'] ?? '',
-                    $_POST['fk_cap_source'] ?? '',
-                    $_POST['fk_tunic_source'] ?? '',
-                    $_POST['fk_trousers_source'] ?? ''
-                );
-
-                $result = $articleManager->addSet($set);
-                sendXMLResponse($result !== false, $result ? 'Set added successfully' : 'Failed to add set');
-                break;
 
             default:
                 sendXMLResponse(false, 'Invalid action');
@@ -278,20 +345,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             break;
         }
 
-        parse_str(file_get_contents("php://input"), $putData);
-        $set = new Set(
-            $putData['pk_set'] ?? null,
-            $_SESSION['user_id'],
-            $putData['nom'] ?? '',
-            $putData['cap_nom'] ?? '',
-            $putData['tunic_nom'] ?? '',
-            $putData['trousers_nom'] ?? '',
-            $putData['description'] ?? '',
-            $putData['effet'] ?? '',
-            $putData['fk_cap_source'] ?? '',
-            $putData['fk_tunic_source'] ?? '',
-            $putData['fk_trousers_source'] ?? ''
-        );
+        
 
         $result = $articleManager->updateSet($set);
         sendXMLResponse($result, $result ? 'Set updated successfully' : 'Failed to update set');

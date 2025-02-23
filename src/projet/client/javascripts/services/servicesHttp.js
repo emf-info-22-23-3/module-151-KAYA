@@ -96,40 +96,48 @@ class servicesHttp {
         });
     }
 
-    addSet(data, successCallback, errorCallback) {
+    addSet(dataGiven, successCallback, errorCallback) {
+        const formData = dataGiven;
+    
+        formData.append("action", "addSet");
+    
         $.ajax({
             type: "POST",
             dataType: "xml",
             url: this.BASE_URL,
-            data: {
-                action: 'add',
-                data: data
-            },
+            data: formData,
+            processData: false, // Prevent jQuery from processing the data
+            contentType: false, // Let the browser set the correct content type
             success: successCallback,
             error: errorCallback
         });
     }
 
-    modifySet(successCallback, errorCallback) {
-        $.ajax({
-            type: "POST",
-            dataType: "xml",
-            url: this.BASE_URL,
-            data: {
-                action: 'modify',
-            },
-            success: successCallback,
-            error: errorCallback
-        });
-    }
-
-    deleteSet(successCallback, errorCallback) {
+    updateSet(successCallback, errorCallback) {
+        const formData = dataGiven;
+    
+        formData.append("action", "updateSet");
+    
         $.ajax({
             type: "PUT",
             dataType: "xml",
             url: this.BASE_URL,
+            data: formData,
+            processData: false, // Prevent jQuery from processing the data
+            contentType: false, // Let the browser set the correct content type
+            success: successCallback,
+            error: errorCallback
+        });
+    }
+
+    deleteSet(id, successCallback, errorCallback) {
+        $.ajax({
+            type: "DELETE",
+            dataType: "xml",
+            url: this.BASE_URL,
             data: {
                 action: 'delete',
+                id: id
             },
             success: successCallback,
             error: errorCallback

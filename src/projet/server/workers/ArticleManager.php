@@ -76,9 +76,11 @@ class ArticleManager {
             
         return $sourceTypesArray;
     }
+
     
-    
-    
+    public function addSource($source) {
+        return $this->dbArticleManager->addSource($source);
+    }
 
     /**
      * Adds a new set to the database
@@ -89,7 +91,6 @@ class ArticleManager {
     public function addSet($set) {
         return $this->dbArticleManager->addSet($set);
     }
-
     /**
      * Updates an existing set
      * 

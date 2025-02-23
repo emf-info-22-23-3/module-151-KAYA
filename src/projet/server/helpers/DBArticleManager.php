@@ -50,8 +50,8 @@ class DBArticleManager
         return $sets;
     }
 
-    public function readSet($id) {
-        error_log("DBArticleManager.readSet called with ID: " . $id);
+    public function readSet($id) 
+    {
         $db = DBConnection::getInstance();
     
         $sql = "SELECT 
@@ -67,12 +67,7 @@ class DBArticleManager
                 JOIN t_user u ON s.FK_User = u.PK_User
                 WHERE s.PK_Set = :id";
     
-        try {
-            $result = $db->SelectQuery($sql, array(':id' => $id));
-        } catch (Exception $e) {
-            echo("Error executing query: " . $e->getMessage());
-            return false;
-        }
+        $result = $db->SelectQuery($sql, array(':id' => $id));
     
         if (count($result) > 0) {
             $row = $result[0];  // Get the first row
@@ -94,7 +89,6 @@ class DBArticleManager
             return $set;
         }
     
-        echo("No set found for ID: " . $id);
         return false;
     }
 
@@ -120,7 +114,6 @@ class DBArticleManager
     }
     
     
-
     /**
      * Ajoute un nouveau set dans la base de données.
      *
@@ -157,6 +150,30 @@ class DBArticleManager
 
         $db->executeQuery($sql, $params);
         return $db->getLastId("t_set");
+    }
+
+    public function addSource($source)
+    {
+        $db = DBConnection::getInstance();
+
+        // SQL query to insert into t_source table
+        $sql = "INSERT INTO t_source (
+                    source, FK_Type_Source
+                ) VALUES (
+                    :source, :fk_type_source
+                )";
+
+        // Parameters to bind
+        $params = array(
+            'source' => $source->getSource(),
+            'fk_type_source' => $source->getTypeSourceId()
+        );
+
+        // Execute the query
+        $db->executeQuery($sql, $params);
+
+        // Return the last inserted ID for the new source
+        return $db->getLastId("t_source");
     }
 
     /**

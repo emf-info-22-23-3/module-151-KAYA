@@ -31,8 +31,8 @@
         <div class="title-buttons-container">
             <h1>Add a New Armour Set</h1>
             <hr>
-                <button id="saveButton" onclick="ctrl.loadAdmin()">Save</button>
-                <button id="cancelButton" onclick="ctrl.loadAdmin()">Cancel</button>
+                <button id="saveButton">Save</button>
+                <button id="cancelButton">Go back</button>
         </div>
 
         <!-- Container for form with a border -->
@@ -93,19 +93,6 @@
             </form>
         </div>
     </main>
-
-    <script>
-        document.getElementById('addArmorForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            Toastify({
-                text: "Armor set saved successfully!",
-                duration: 3000,
-                gravity: "top",
-                position: "right",
-                backgroundColor: "green"
-            }).showToast();
-        });
-    </script>
 </body>
 
 </html>
