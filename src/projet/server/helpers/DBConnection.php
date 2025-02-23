@@ -102,6 +102,21 @@ class DBConnection {
             die();
         }
     }
+
+    // Start a transaction
+    public function beginTransaction() {
+        return $this->pdo->beginTransaction();
+    }
+
+    // Commit the transaction
+    public function commitTransaction() {
+        return $this->pdo->commit();
+    }
+
+    // Rollback the transaction
+    public function rollBackTransaction() {
+        return $this->pdo->rollBack();
+    }
 }
 
 ?>

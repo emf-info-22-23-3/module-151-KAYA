@@ -77,11 +77,6 @@ class ArticleManager {
         return $sourceTypesArray;
     }
 
-    
-    public function addSource($source) {
-        return $this->dbArticleManager->addSource($source);
-    }
-
     /**
      * Adds a new set to the database
      * 
@@ -91,14 +86,35 @@ class ArticleManager {
     public function addSet($set) {
         return $this->dbArticleManager->addSet($set);
     }
+
+    public function addSource($source) {
+        return $this->dbArticleManager->addSource($source);
+    }
+
     /**
-     * Updates an existing set
+     * updates a set from the database
      * 
-     * @param Set $set The set to update
-     * @return bool True if successful, false otherwise
+     * @param Set $set The set to add
+     * @return int|false The ID of the new set or false if failed
      */
     public function updateSet($set) {
         return $this->dbArticleManager->updateSet($set);
+    }
+
+    public function updateSource($source) {
+        return $this->dbArticleManager->updateSource($source);
+    }
+
+    public function beginTransaction() {
+        return $this->dbArticleManager->beginTransaction();
+    }
+
+    public function commitTransaction() {
+        return $this->dbArticleManager->commitTransaction();
+    }
+
+    public function rollbackTransaction() {
+        return $this->dbArticleManager->rollbackTransaction();
     }
 
     /**
@@ -107,8 +123,8 @@ class ArticleManager {
      * @param int $setId The ID of the set to delete
      * @return bool True if successful, false otherwise
      */
-    public function deleteSet($setId) {
-        return $this->dbArticleManager->deleteSet($setId);
+    public function deleteSet($idSet, $idCapSource, $idTunicSource, $idTrousersSource) {
+        return $this->dbArticleManager->deleteSet($idSet, $idCapSource, $idTunicSource, $idTrousersSource);
     }
 }
 ?>

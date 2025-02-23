@@ -130,14 +130,56 @@ class servicesHttp {
         });
     }
 
-    deleteSet(id, successCallback, errorCallback) {
+    deleteSet(idSet, idCapSource, idTunicSource, idTrousersSource, successCallback, errorCallback) {
         $.ajax({
             type: "DELETE",
             dataType: "xml",
             url: this.BASE_URL,
             data: {
                 action: 'delete',
-                id: id
+                idSet: idSet,
+                idCapSource: idCapSource,
+                idTunicSource: idTunicSource,
+                idTrousersSource: idTrousersSource
+            },
+            success: successCallback,
+            error: errorCallback
+        });
+    }
+
+    beginTransaction(successCallback, errorCallback) {
+        $.ajax({
+            type: "POST",
+            dataType: "xml",
+            url: this.BASE_URL,
+            data: {
+                action: 'beginTransaction',
+            },
+            success: successCallback,
+            error: errorCallback
+        });
+    }
+
+    commitTransaction(successCallback, errorCallback) {
+        $.ajax({
+            type: "POST",
+            dataType: "xml",
+            url: this.BASE_URL,
+            data: {
+                action: 'commitTransaction',
+            },
+            success: successCallback,
+            error: errorCallback
+        });
+    }
+
+    rollbackTransaction(successCallback, errorCallback) {
+        $.ajax({
+            type: "POST",
+            dataType: "xml",
+            url: this.BASE_URL,
+            data: {
+                action: 'rollbackTransaction',
             },
             success: successCallback,
             error: errorCallback

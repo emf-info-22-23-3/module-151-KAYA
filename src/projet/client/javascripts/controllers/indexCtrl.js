@@ -70,6 +70,10 @@ class IndexCtrl {
             const selectedId = $(this).val();
             if (selectedId) {
                 console.log("Selected armor set ID:", selectedId);
+
+                 // Store the selected ID in localStorage
+                localStorage.setItem('selectedArmorId', selectedId);
+
                 window.ctrl.http.getAnnoncesForArmor(selectedId, window.ctrl.getAnnoncesSuccess, window.ctrl.CallbackError);
             } else {
                 // Clear the form if no armor is selected
@@ -282,9 +286,5 @@ $(document).ready(function () {
     $("#modifyButton").on("click", function () {
         console.log("Add button clicked, navigating to modify.html");
         window.location.href = "../views/modify.html"; 
-        console.log("Loading source types");
-        window.ctrl.http.getSourceTypes(window.ctrl.getSourceTypesSuccess, window.ctrl.callbackError);
-        const data = window.ctrl.collectFormData();
-        window.ctrl.http.addSet(data, window.ctrl.addSetSuccess, window.ctrl.callbackError);
     });
 });

@@ -176,12 +176,14 @@ class DBArticleManager
         return $db->getLastId("t_source");
     }
 
+    /*
+
     /**
      * Met à jour un set existant dans la base de données.
      *
      * @param Set $set Le set à modifier
      * @return bool true si la mise à jour a réussi, false sinon
-     */
+     
     public function updateSet($set)
     {
         $db = DBConnection::getInstance();
@@ -219,19 +221,134 @@ class DBArticleManager
         return $rowCount > 0;
     }
 
+    */
+
+    public function updateSource($sourcePk, $source, $typeSourceId)
+    {
+        $db = DBConnection::getInstance();
+
+        // SQL query to update the source in t_source table
+        $sql = "UPDATE t_source SET
+                    source = :source,
+                    FK_Type_Source = :fk_type_source
+                WHERE pk_source = :pk_source";
+
+        // Parameters to bind
+        $params = array(
+            'source' => $source,
+            'fk_type_source' => $typeSourceId,
+            'pk_source' => $sourcePk
+        );
+
+        // Execute the query
+        return $db->executeQuery($sql, $params);
+    }
+
+
+    /**
+     * Met à jour un set existant dans la base de données.
+     *
+     * @param Set $set Le set à modifier
+     * @return bool true si la mise à jour a réussi, false sinon
+     */
+    public function updateSet($set)
+    {
+        $db = DBConnection::getInstance();
+
+        // SQL query to update the set in t_set table
+        $sql = "UPDATE t_set SET
+                    FK_User = :fk_user,
+                    Nom = :nom,
+                    Cap_Nom = :cap_nom,
+                    Tunic_Nom = :tunic_nom,
+                    Trousers_Nom = :trousers_nom,
+                    Description = :description,
+                    Effet = :effet,
+                    FK_Cap_Source = :fk_cap_source,
+                    FK_Tunic_Source = :fk_tunic_source,
+                    FK_Trousers_Source = :fk_trousers_source,
+                    Image_Set = :image_set
+                WHERE pk_set = :pk_set";
+
+        // Parameters to bind
+        $params = array(
+            'fk_user' => $set->getFkUser(),
+            'nom' => $set->getNom(),
+            'cap_nom' => $set->getCapNom(),
+            'tunic_nom' => $set->getTunicNom(),
+            'trousers_nom' => $set->getTrousersNom(),
+            'description' => $set->getDescription(),
+            'effet' => $set->getEffet(),
+            'fk_cap_source' => $set->getFkCapSource(),
+            'fk_tunic_source' => $set->getFkTunicSource(),
+            'fk_trousers_source' => $set->getFkTrousersSource(),
+            'image_set' => $set->getImageSet(),
+            'pk_set' => $set->getPkSet() 
+        );
+
+        // Execute the query
+        return $db->executeQuery($sql, $params);
+    }
+
+
     /**
      * Supprime un set de la base de données.
      *
      * @param int $pk_set L'ID du set à supprimer
      * @return bool true si la suppression a réussi, false sinon
      */
-    public function deleteSet($pk_set)
+    public function deleteSource($idCapSource, $idTunicSource, $idTrousersSource)
     {
         $db = DBConnection::getInstance();
-        $sql = "DELETE FROM t_set WHERE PK_Set = :pk_set";
-        $rowCount = $db->executeQuery($sql, array('pk_set' => $pk_set));
-        return $rowCount > 0;
+
+        // SQL to delete the sources
+        $sqlCap = "DELETE FROM t_source WHERE PK_Source = :pk_source";
+        $sqlTunic = "DELETE FROM t_source WHERE PK_Source = :pk_source";
+        $sqlTrousers = "DELETE FROM t_source WHERE PK_Source = :pk_source";
+
+        // Execute the delete queries
+        $capDeleted = $db->executeQuery($sqlCap, array('pk_source' => $idCapSource));
+        $tunicDeleted = $db->executeQuery($sqlTunic, array('pk_source' => $idTunicSource));
+        $trousersDeleted = $db->executeQuery($sqlTrousers, array('pk_source' => $idTrousersSource));
+
+        // Return true if all sources were deleted
+        return $capDeleted && $tunicDeleted && $trousersDeleted;
     }
+
+
+    public function deleteSet($idSet, $idCapSource, $idTunicSource, $idTrousersSource)
+    {
+        $db = DBConnection::getInstance();
+
+        // First delete the sources
+        $sourcesDeleted = $this->deleteSource($idCapSource, $idTunicSource, $idTrousersSource);
+
+        // If source deletion was successful, delete the set
+        if ($sourcesDeleted) {
+            $sql = "DELETE FROM t_set WHERE PK_Set = :pk_set";
+            $rowCount = $db->executeQuery($sql, array('pk_set' => $idSet));
+            return $rowCount > 0;
+        } else {
+            // If source deletion failed, return false
+            return false;
+        }
+    }
+
+    public function beginTransaction() {
+        $this->dbConnection = DBConnection::getInstance();
+        return $this->dbConnection->beginTransaction();
+    }
+
+    public function commitTransaction() {
+        $this->dbConnection = DBConnection::getInstance();
+        return $this->dbConnection->commitTransaction();
+    }
+
+    public function rollbackTransaction() {
+        $this->dbConnection = DBConnection::getInstance();
+        return $this->dbConnection->rollbackTransaction();
+    }
+
 
     /**
      * Génère une représentation XML de tous les sets.

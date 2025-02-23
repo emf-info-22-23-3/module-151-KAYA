@@ -170,98 +170,158 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 sendXMLResponseLogout(true, 'Logout successful');
                 break;
 
-                case 'addSet':
+                case 'beginTransaction':
                     if (!isLoggedIn()) {
                         sendXMLResponse(false, 'Please log in first');
                         break;
                     }
-                
+            
                     if (!isAdmin()) {
                         sendXMLResponse(false, 'Administrator access required');
                         break;
                     }
-                    // Collecting form data
-    $armorName = $_POST['armorName'] ?? '';
-    echo "Armor Name: $armorName\n";  // Debugging armor name
-    $armorCapName = $_POST['armorCapName'] ?? '';
-    echo "Cap Name: $armorCapName\n";  // Debugging cap name
-    $armorTunicName = $_POST['armorTunicName'] ?? '';
-    echo "Tunic Name: $armorTunicName\n";  // Debugging tunic name
-    $armorTrousersName = $_POST['armorTrousersName'] ?? '';
-    echo "Trousers Name: $armorTrousersName\n";  // Debugging trousers name
-    $armorEffect = $_POST['armorEffect'] ?? '';
-    echo "Effect: $armorEffect\n";  // Debugging effect
-    $armorDescription = $_POST['armorDescription'] ?? '';
-    echo "Description: $armorDescription\n";  // Debugging description
-
-    // Collecting source type and source values
-    $armorCapSourceType = $_POST['armorCapSourceType'] ?? '';
-    echo "Cap Source Type: $armorCapSourceType\n";  // Debugging cap source type
-    $armorCapSource = $_POST['armorCapSource'] ?? '';
-    echo "Cap Source: $armorCapSource\n";  // Debugging cap source
-    $armorTunicSourceType = $_POST['armorTunicSourceType'] ?? '';
-    echo "Tunic Source Type: $armorTunicSourceType\n";  // Debugging tunic source type
-    $armorTunicSource = $_POST['armorTunicSource'] ?? '';
-    echo "Tunic Source: $armorTunicSource\n";  // Debugging tunic source
-    $armorTrousersSourceType = $_POST['armorTrousersSourceType'] ?? '';
-    echo "Trousers Source Type: $armorTrousersSourceType\n";  // Debugging trousers source type
-    $armorTrousersSource = $_POST['armorTrousersSource'] ?? '';
-    echo "Trousers Source: $armorTrousersSource\n";  // Debugging trousers source
-                
-                    // Handling the uploaded image (if exists)
-                    if (isset($_FILES['armorImage']) && $_FILES['armorImage']['error'] === UPLOAD_ERR_OK) {
-                        $imageTempPath = $_FILES['armorImage']['tmp_name'];
-                        $imageName = $_FILES['armorImage']['name'];
-                        $imagePath = 'uploads/' . $imageName;
-                        move_uploaded_file($imageTempPath, $imagePath);
+            
+                    $result = $articleManager->beginTransaction();
+            
+                    if ($result) {
+                        sendXMLResponse(true, 'Transaction has begun!');
                     } else {
-                        $imagePath = ''; // Or handle the case where no image was uploaded
+                        sendXMLResponse(false, 'Failed to start the transaction');
                     }
-
-                    $armorCapSourceNew = new Source(
-                        null,
-                        $armorCapSource,
-                        $armorCapSourceType
-                    );
-
-                    $armorTunicSourceNew = new Source(
-                        null,
-                        $armorTunicSource,
-                        $armorTunicSourceType
-                    );
-
-                    $armorTrousersSourceNew = new Source(
-                        null,
-                        $armorTrousersSource,
-                        $armorTrousersSourceType
-                    );
-
-                    // Create threee Source object with the sourceType data and source data
-                    $armorCapSourceId = $articleManager->addSource($armorCapSourceNew);
-                    $armorTunicSourceId = $articleManager->addSource($armorTunicSourceNew);
-                    $armorTrousersSourceId = $articleManager->addSource($armorTrousersSourceNew);
-                
-                    // Create a Set object with the collected data
-                    $set = new Set(
-                        null,
-                        $_SESSION['user_id'],
-                        $armorName,
-                        $armorCapName,
-                        $armorTunicName,
-                        $armorTrousersName,
-                        $armorDescription,
-                        $armorEffect,
-                        $armorCapSourceId,
-                        $armorTunicSourceId,
-                        $armorTrousersSourceId,
-                        $imagePath
-                    );
-                
-                    // Call the manager to add the set
-                    $result = $articleManager->addSet($set);
-                
-                    sendXMLResponse($result !== false, $result ? 'Set added successfully' : 'Failed to add set');
                     break;
+            
+                case 'commitTransaction':
+                    if (!isLoggedIn()) {
+                        sendXMLResponse(false, 'Please log in first');
+                        break;
+                    }
+            
+                    if (!isAdmin()) {
+                        sendXMLResponse(false, 'Administrator access required');
+                        break;
+                    }
+            
+                    $result = $articleManager->commitTransaction();
+            
+                    if ($result) {
+                        sendXMLResponse(true, 'Transaction has been committed!');
+                    } else {
+                        sendXMLResponse(false, 'Failed to commit the transaction');
+                    }
+                    break;
+            
+                case 'rollbackTransaction':
+                    if (!isLoggedIn()) {
+                        sendXMLResponse(false, 'Please log in first');
+                        break;
+                    }
+            
+                    if (!isAdmin()) {
+                        sendXMLResponse(false, 'Administrator access required');
+                        break;
+                    }
+            
+                    $result = $articleManager->rollbackTransaction();
+            
+                    if ($result) {
+                        sendXMLResponse(true, 'Transaction has been rolled back!');
+                    } else {
+                        sendXMLResponse(false, 'Failed to roll back the transaction');
+                    }
+                    break;
+
+            case 'addSet':
+                if (!isLoggedIn()) {
+                    sendXMLResponse(false, 'Please log in first');
+                    break;
+                }
+            
+                if (!isAdmin()) {
+                    sendXMLResponse(false, 'Administrator access required');
+                    break;
+                }
+                // Collecting form data
+                $armorName = $_POST['armorName'] ?? '';
+                echo "Armor Name: $armorName\n";  // Debugging armor name
+                $armorCapName = $_POST['armorCapName'] ?? '';
+                echo "Cap Name: $armorCapName\n";  // Debugging cap name
+                $armorTunicName = $_POST['armorTunicName'] ?? '';
+                echo "Tunic Name: $armorTunicName\n";  // Debugging tunic name
+                $armorTrousersName = $_POST['armorTrousersName'] ?? '';
+                echo "Trousers Name: $armorTrousersName\n";  // Debugging trousers name
+                $armorEffect = $_POST['armorEffect'] ?? '';
+                echo "Effect: $armorEffect\n";  // Debugging effect
+                $armorDescription = $_POST['armorDescription'] ?? '';
+                echo "Description: $armorDescription\n";  // Debugging description
+
+                // Collecting source type and source values
+                $armorCapSourceType = $_POST['armorCapSourceType'] ?? '';
+                echo "Cap Source Type: $armorCapSourceType\n";  // Debugging cap source type
+                $armorCapSource = $_POST['armorCapSource'] ?? '';
+                echo "Cap Source: $armorCapSource\n";  // Debugging cap source
+                $armorTunicSourceType = $_POST['armorTunicSourceType'] ?? '';
+                echo "Tunic Source Type: $armorTunicSourceType\n";  // Debugging tunic source type
+                $armorTunicSource = $_POST['armorTunicSource'] ?? '';
+                echo "Tunic Source: $armorTunicSource\n";  // Debugging tunic source
+                $armorTrousersSourceType = $_POST['armorTrousersSourceType'] ?? '';
+                echo "Trousers Source Type: $armorTrousersSourceType\n";  // Debugging trousers source type
+                $armorTrousersSource = $_POST['armorTrousersSource'] ?? '';
+                echo "Trousers Source: $armorTrousersSource\n";  // Debugging trousers source
+            
+                // Handling the uploaded image (if exists)
+                if (isset($_FILES['armorImage']) && $_FILES['armorImage']['error'] === UPLOAD_ERR_OK) {
+                    $imageTempPath = $_FILES['armorImage']['tmp_name'];
+                    $imageName = $_FILES['armorImage']['name'];
+                    $imagePath = 'uploads/' . $imageName;
+                    move_uploaded_file($imageTempPath, $imagePath);
+                } else {
+                    $imagePath = ''; // Or handle the case where no image was uploaded
+                }
+
+                $armorCapSourceNew = new Source(
+                    null,
+                    $armorCapSource,
+                    $armorCapSourceType
+                );
+
+                $armorTunicSourceNew = new Source(
+                    null,
+                    $armorTunicSource,
+                    $armorTunicSourceType
+                );
+
+                $armorTrousersSourceNew = new Source(
+                null,
+                    $armorTrousersSource,
+                    $armorTrousersSourceType
+                );
+
+                // Create threee Source object with the sourceType data and source data
+                $armorCapSourceId = $articleManager->addSource($armorCapSourceNew);
+                $armorTunicSourceId = $articleManager->addSource($armorTunicSourceNew);
+                $armorTrousersSourceId = $articleManager->addSource($armorTrousersSourceNew);
+            
+                // Create a Set object with the collected data
+                $set = new Set(
+                    null,
+                    $_SESSION['user_id'],
+                    $armorName,
+                    $armorCapName,
+                    $armorTunicName,
+                    $armorTrousersName,
+                    $armorDescription,
+                    $armorEffect,
+                    $armorCapSourceId,
+                    $armorTunicSourceId,
+                    $armorTrousersSourceId,
+                    $imagePath
+                );
+            
+                // Call the manager to add the set
+                $result = $articleManager->addSet($set);
+            
+                sendXMLResponse($result !== false, $result ? 'Set added successfully' : 'Failed to add set');
+                break;
 
             default:
                 sendXMLResponse(false, 'Invalid action');
@@ -345,9 +405,66 @@ switch ($_SERVER['REQUEST_METHOD']) {
             break;
         }
 
-        
+        // Collecting form data
+        $armorName = $_POST['armorName'] ?? '';
+        $armorCapName = $_POST['armorCapName'] ?? '';
+        $armorTunicName = $_POST['armorTunicName'] ?? '';
+        $armorTrousersName = $_POST['armorTrousersName'] ?? '';
+        $armorEffect = $_POST['armorEffect'] ?? '';
+        $armorDescription = $_POST['armorDescription'] ?? '';
+        $armorCapSourceType = $_POST['armorCapSourceType'] ?? '';
+        $armorCapSource = $_POST['armorCapSource'] ?? '';
+        $armorTunicSourceType = $_POST['armorTunicSourceType'] ?? '';
+        $armorTunicSource = $_POST['armorTunicSource'] ?? '';
+        $armorTrousersSourceType = $_POST['armorTrousersSourceType'] ?? '';
+        $armorTrousersSource = $_POST['armorTrousersSource'] ?? '';
 
+        // Handling the uploaded image (if exists)
+        if (isset($_FILES['armorImage']) && $_FILES['armorImage']['error'] === UPLOAD_ERR_OK) {
+            $imageTempPath = $_FILES['armorImage']['tmp_name'];
+            $imageName = $_FILES['armorImage']['name'];
+            $imagePath = 'uploads/' . $imageName;
+            move_uploaded_file($imageTempPath, $imagePath);
+        } else {
+            // If no new image, retain the old image path or set to '' if no image exists
+            $imagePath = $_POST['existingImagePath'] ?? ''; // Assuming the old image path is sent
+        }
+
+        // Fetch and update sources (Cap, Tunic, Trousers)
+        $armorCapSourceId = $_POST['armorCapSourceId'] ?? null;
+        $armorTunicSourceId = $_POST['armorTunicSourceId'] ?? null;
+        $armorTrousersSourceId = $_POST['armorTrousersSourceId'] ?? null;
+
+        // Update sources if necessary
+        if ($armorCapSource && $armorCapSourceType) {
+            $articleManager->updateSource($armorCapSourceId, $armorCapSource, $armorCapSourceType);
+        }
+        if ($armorTunicSource && $armorTunicSourceType) {
+            $articleManager->updateSource($armorTunicSourceId, $armorTunicSource, $armorTunicSourceType);
+        }
+        if ($armorTrousersSource && $armorTrousersSourceType) {
+            $articleManager->updateSource($armorTrousersSourceId, $armorTrousersSource, $armorTrousersSourceType);
+        }
+
+        // Create the Set object with the collected data
+        $set = new Set(
+            $selectedArmorId,  // Assuming the ID of the set to update
+            $_SESSION['user_id'],
+            $armorName,
+            $armorCapName,
+            $armorTunicName,
+            $armorTrousersName,
+            $armorDescription,
+            $armorEffect,
+            $armorCapSourceId,
+            $armorTunicSourceId,
+            $armorTrousersSourceId,
+            $imagePath
+        );
+
+        // Update the armor set
         $result = $articleManager->updateSet($set);
+
         sendXMLResponse($result, $result ? 'Set updated successfully' : 'Failed to update set');
         break;
 
@@ -356,20 +473,31 @@ switch ($_SERVER['REQUEST_METHOD']) {
             sendXMLResponse(false, 'Please log in first');
             break;
         }
-
+    
         if (!isAdmin()) {
             sendXMLResponse(false, 'Administrator access required');
             break;
         }
-
-        $setId = $_GET['id'] ?? null;
-        if (!$setId) {
-            sendXMLResponse(false, 'Set ID is required');
+        
+        // Read raw input (DELETE request data)
+        $inputData = json_decode(file_get_contents('php://input'), true);
+    
+        // Collecting form data from the raw input
+        $idSet = $inputData['idSet'] ?? '';
+        $idCapSource = $inputData['idCapSource'] ?? '';
+        $idTunicSource = $inputData['idTunicSource'] ?? '';
+        $idTrousersSource = $inputData['idTrousersSource'] ?? '';
+    
+        if (empty($idSet) || empty($idCapSource) || empty($idTunicSource) || empty($idTrousersSource)) {
+            sendXMLResponse(false, 'Missing required parameters');
             break;
         }
-
-        $result = $articleManager->deleteSet($setId);
-        sendXMLResponse($result, $result ? 'Set deleted successfully' : 'Failed to delete set');
+    
+        // Proceed with the deletion
+        $result = $articleManager->deleteSet($idSet, $idCapSource, $idTunicSource, $idTrousersSource);
+    
+        // Send the response based on the result
+        sendXMLResponse($result, $result ? 'Set and associated sources deleted successfully' : 'Failed to delete set');
         break;
 
     default:
