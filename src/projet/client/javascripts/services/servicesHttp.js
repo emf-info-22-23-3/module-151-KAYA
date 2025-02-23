@@ -113,18 +113,17 @@ class servicesHttp {
         });
     }
 
-    updateSet(successCallback, errorCallback) {
+    updateSet(dataGiven, successCallback, errorCallback) {
         const formData = dataGiven;
-    
         formData.append("action", "updateSet");
-    
+
         $.ajax({
             type: "PUT",
             dataType: "xml",
             url: this.BASE_URL,
             data: formData,
-            processData: false, // Prevent jQuery from processing the data
-            contentType: false, // Let the browser set the correct content type
+            processData: false,
+            contentType: false,
             success: successCallback,
             error: errorCallback
         });
