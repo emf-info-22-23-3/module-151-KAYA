@@ -8,12 +8,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css" rel="stylesheet">
     <!--ce lien est pour les TOASTs qui sont des petites popup success ou error en haut a droite...-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.js"></script>
-    <link rel="stylesheet" href="css/cssPrincipale.css"></link>
-    <script type="text/javascript" src="javascripts/helpers/httpService.js"></script>
-    <script type="text/javascript" src="javascripts/helpers/viewLoader.js"></script>
-    <script type="text/javascript" src="javascripts/helpers/jquery-1.10.2.min.js"></script>
-    <script type="text/javascript" src="javascripts/controllers/indexCtrl.js"></script>
-    <script type="text/javascript" src="javascripts/services/servicesHttp.js"></script>
+    <link rel="stylesheet" href="../css/cssPrincipale.css"></link>
+    <script type="text/javascript" src="../javascripts/helpers/httpService.js"></script>
+    <script type="text/javascript" src="../javascripts/helpers/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="../javascripts/controllers/indexCtrl.js"></script>
+    <script type="text/javascript" src="../javascripts/services/servicesHttp.js"></script>
 </head>
 
 <body>
@@ -31,6 +30,15 @@
         <div class="title-buttons-container">
             <h1>Armours</h1>
             <hr>
+        </div>
+
+        <div class="form-group">
+            <label for="armorNameSelect">Select Armor:</label>
+            <div class="source-group">
+                <select id="armorNameSelect">$
+                    <!-- Armor names will be populated here -->
+                </select>
+            </div>
         </div>
 
         <!-- Container for form with a border -->
@@ -52,9 +60,7 @@
                     <label for="armorCapSource">Cap Source:</label>
                     <div class="source-group">
                         <select id="armorCapSourceType">
-                            <option value="shop">Shop</option>
-                            <option value="chest">Chest</option>
-                            <option value="quest">Quest</option>
+
                         </select>
                         <textarea id="armorCapSource" required></textarea>
                     </div>
@@ -67,9 +73,6 @@
                     <label for="armorTunicSource">Tunic Source:</label>
                     <div class="source-group">
                         <select id="armorTunicSourceType">
-                            <option value="shop">Shop</option>
-                            <option value="chest">Chest</option>
-                            <option value="quest">Quest</option>
                         </select>
                         <textarea id="armorTunicSource" required></textarea>
                     </div>
@@ -82,9 +85,6 @@
                     <label for="armorTrousersSource">Trousers Source:</label>
                     <div class="source-group">
                         <select id="armorTrousersSourceType">
-                            <option value="shop">Shop</option>
-                            <option value="chest">Chest</option>
-                            <option value="quest">Quest</option>
                         </select>
                         <textarea id="armorTrousersSource" required></textarea>
                     </div>
@@ -104,18 +104,6 @@
             </form>
         </div>
     </main>
-    <script>
-        document.getElementById('addArmorForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            Toastify({
-                text: "Armor set saved successfully!",
-                duration: 3000,
-                gravity: "top",
-                position: "right",
-                backgroundColor: "green"
-            }).showToast();
-        });
-    </script>
 </body>
 
 </html>

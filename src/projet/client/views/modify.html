@@ -8,12 +8,12 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css" rel="stylesheet">
     <!--ce lien est pour les TOASTs qui sont des petites popup success ou error en haut a droite...-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.js"></script>
-    <link rel="stylesheet" href="css/cssPrincipale.css"></link>
-    <script type="text/javascript" src="javascripts/helpers/httpService.js"></script>
-    <script type="text/javascript" src="javascripts/helpers/viewLoader.js"></script>
-    <script type="text/javascript" src="javascripts/helpers/jquery-1.10.2.min.js"></script>
-    <script type="text/javascript" src="javascripts/controllers/indexCtrl.js"></script>
-    <script type="text/javascript" src="javascripts/services/servicesHttp.js"></script>
+    <link rel="stylesheet" href="../css/cssPrincipale.css"></link>
+    <script type="text/javascript" src="../javascripts/helpers/httpService.js"></script>
+    <script type="text/javascript" src="../javascripts/helpers/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="../javascripts/controllers/indexCtrl.js"></script>
+    <script type="text/javascript" src="../javascripts/controllers/modifyCtrl.js"></script>
+    <script type="text/javascript" src="../javascripts/services/servicesHttp.js"></script>
 </head>
 
 <body>
@@ -29,15 +29,16 @@
 
         <!-- New container for title and buttons with border -->
         <div class="title-buttons-container">
-            <h1>Add a New Armour Set</h1>
+            <h1>Modify an Armour Set</h1>
             <hr>
-                <button id="saveButton" onclick="ctrl.loadAdmin()">Save</button>
-                <button id="deleteButton" onclick="ctrl.loadAdmin()">Delete</button>
+                <button id="saveButton">Save</button>
+                <button id="deleteButton">Delete</button>
+                <button id="cancelButton">Go Back</button>
         </div>
 
         <!-- Container for form with a border -->
         <div class="form-container">
-            <form id="addArmorForm">
+            <form id="modifyArmorForm">
                 <div class="form-group">
                     <label for="armorName">Armor Name:</label>
                     <input type="text" id="armorName" required>
@@ -50,9 +51,6 @@
                     <label for="armorCapSource">Cap Source:</label>
                     <div class="source-group">
                         <select id="armorCapSourceType">
-                            <option value="shop">Shop</option>
-                            <option value="chest">Chest</option>
-                            <option value="quest">Quest</option>
                         </select>
                         <textarea id="armorCapSource" required></textarea>
                     </div>
@@ -65,9 +63,6 @@
                     <label for="armorTunicSource">Tunic Source:</label>
                     <div class="source-group">
                         <select id="armorTunicSourceType">
-                            <option value="shop">Shop</option>
-                            <option value="chest">Chest</option>
-                            <option value="quest">Quest</option>
                         </select>
                         <textarea id="armorTunicSource" required></textarea>
                     </div>
@@ -80,9 +75,6 @@
                     <label for="armorTrousersSource">Trousers Source:</label>
                     <div class="source-group">
                         <select id="armorTrousersSourceType">
-                            <option value="shop">Shop</option>
-                            <option value="chest">Chest</option>
-                            <option value="quest">Quest</option>
                         </select>
                         <textarea id="armorTrousersSource" required></textarea>
                     </div>
@@ -102,19 +94,6 @@
             </form>
         </div>
     </main>
-
-    <script>
-        document.getElementById('addArmorForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            Toastify({
-                text: "Armor set saved successfully!",
-                duration: 3000,
-                gravity: "top",
-                position: "right",
-                backgroundColor: "green"
-            }).showToast();
-        });
-    </script>
 </body>
 
 </html>

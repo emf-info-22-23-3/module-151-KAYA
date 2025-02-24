@@ -56,18 +56,24 @@ class Set {
     public function setFkTunicSource($fk_tunic_source) { $this->fk_tunic_source = $fk_tunic_source; }
     public function setFkTrousersSource($fk_trousers_source) { $this->fk_trousers_source = $fk_trousers_source; }
     public function setImageSet($image_set) { $this->image_set = $image_set; }
- 
 
     public function toXML() {
-        return '<set>' .
-               '<pk_set>' . $this->pk_set . '</pk_set>' .
-               '<nom>' . htmlspecialchars($this->nom) . '</nom>' .
-               '<cap_nom>' . htmlspecialchars($this->cap_nom) . '</cap_nom>' .
-               '<tunic_nom>' . htmlspecialchars($this->tunic_nom) . '</tunic_nom>' .
-               '<trousers_nom>' . htmlspecialchars($this->trousers_nom) . '</trousers_nom>' .
-               '<description>' . htmlspecialchars($this->description) . '</description>' .
-               '<effet>' . htmlspecialchars($this->effet) . '</effet>' .
-               '</set>';
+        $xml = '<set>';
+        $xml .= '<pk_set>' . htmlspecialchars($this->pk_set ?? '', ENT_XML1, 'UTF-8') . '</pk_set>';
+        $xml .= '<nom>' . htmlspecialchars($this->nom ?? '', ENT_XML1, 'UTF-8') . '</nom>';
+        $xml .= '<cap_nom>' . htmlspecialchars($this->cap_nom ?? '', ENT_XML1, 'UTF-8') . '</cap_nom>';
+        $xml .= '<tunic_nom>' . htmlspecialchars($this->tunic_nom ?? '', ENT_XML1, 'UTF-8') . '</tunic_nom>';
+        $xml .= '<trousers_nom>' . htmlspecialchars($this->trousers_nom ?? '', ENT_XML1, 'UTF-8') . '</trousers_nom>';
+        $xml .= '<description>' . htmlspecialchars($this->description ?? '', ENT_XML1, 'UTF-8') . '</description>';
+        $xml .= '<effet>' . htmlspecialchars($this->effet ?? '', ENT_XML1, 'UTF-8') . '</effet>';
+        $xml .= '<fk_cap_source>' . htmlspecialchars($this->fk_cap_source ?? '', ENT_XML1, 'UTF-8') . '</fk_cap_source>';
+        $xml .= '<fk_tunic_source>' . htmlspecialchars($this->fk_tunic_source ?? '', ENT_XML1, 'UTF-8') . '</fk_tunic_source>';
+        $xml .= '<fk_trousers_source>' . htmlspecialchars($this->fk_trousers_source ?? '', ENT_XML1, 'UTF-8') . '</fk_trousers_source>';
+        $xml .= '<image_set>' . htmlspecialchars($this->image_set ?? '', ENT_XML1, 'UTF-8') . '</image_set>';
+        $xml .= '</set>';
+        return $xml;
     }
+    
 }
+
 ?>

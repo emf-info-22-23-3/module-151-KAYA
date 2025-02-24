@@ -10,7 +10,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.js"></script>
     <link rel="stylesheet" href="css/cssPrincipale.css"></link>
     <script type="text/javascript" src="javascripts/helpers/httpService.js"></script>
-    <script type="text/javascript" src="javascripts/helpers/viewLoader.js"></script>
     <script type="text/javascript" src="javascripts/helpers/jquery-1.10.2.min.js"></script>
     <script type="text/javascript" src="javascripts/controllers/indexCtrl.js"></script>
     <script type="text/javascript" src="javascripts/services/servicesHttp.js"></script>
@@ -29,18 +28,17 @@
             <h1>Administration</h1>
         </div>
         <hr>
-        <form class="login-form" id="loginForm">
+        <form class="login-form" id="loginForm" autocomplete="on">
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" id="email" required>
+                <input type="email" id="email" name="email" required autocomplete="email">
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input type="password" id="password" required>
+                <input type="password" id="password" name="password" required autocomplete="current-password">
             </div>
-            <button type="submitLogin" id="submitLogin" onclick="ctrl.loadAdmin()">Sign In</button>
-        </form>
-
+            <button type="submit" id="submitLogin">Sign In</button>        
+        </form>        
         <div class="welcome">
             <p>Welcome to the Zelda: Tears of the Kingdom Armor Viewer! </p>
             <p>Log in to explore and discover all available armor sets. Browse detailed stats and find the perfect gear
@@ -49,5 +47,4 @@
         </div>
     </main>
 </body>
-
 </html>
