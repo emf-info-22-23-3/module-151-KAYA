@@ -65,9 +65,9 @@ class ArticleManager {
      * @param Set $set The set to add
      * @return int|false The ID of the new set or false if failed
      */
-    public function addSet($set) {
-        return $this->dbArticleManager->addSet($set);
-    }
+    public function addSet($set, $armorCapSource, $armorTunicSource, $armorTrousersSource) {
+        return $this->dbArticleManager->addSet($set, $armorCapSource, $armorTunicSource, $armorTrousersSource);
+    }    
 
     /**
      * updates a set from the database
@@ -75,8 +75,8 @@ class ArticleManager {
      * @param Set $set The set to add
      * @return int|false The ID of the new set or false if failed
      */
-    public function updateSet($set) {
-        return $this->dbArticleManager->updateSet($set);
+    public function updateSet($set, $armorCapSourceObj, $armorTunicSourceObj, $armorTrousersSourceObj) {
+        return $this->dbArticleManager->updateSet($set, $armorCapSourceObj, $armorTunicSourceObj, $armorTrousersSourceObj);
     }
 
     /**

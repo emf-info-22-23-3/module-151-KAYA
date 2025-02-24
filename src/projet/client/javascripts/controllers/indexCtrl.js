@@ -100,7 +100,6 @@ class IndexCtrl {
         const capSource = $xml.find("response setWanted CapSource");
         const tunicSource = $xml.find("response setWanted TunicSource");
         const trousersSource = $xml.find("response setWanted TrousersSource");
-
         console.log("Found <set> elements:", setWanted.length);
 
         // Check if there are any valid <set> elements

@@ -267,7 +267,7 @@ class DBArticleManager
             $updatedTrousersSource = $this->updateSource($armorTrousersSourceObj);
 
             // If source deletion was successful, delete the set
-            if ($sourcesUpdated) {
+            if ($updatedCapSource && $updatedTunicSource &&  $updatedTrousersSource) {
                     // SQL query to update the set in t_set table
             $sql = "UPDATE t_set SET
                     FK_User = :fk_user,
@@ -311,32 +311,24 @@ class DBArticleManager
         }
     }
 
-    public function deleteSource($idCapSource, $idTunicSource, $idTrousersSource)
+    public function deleteSource($sourceIds)
     {
         $db = DBConnection::getInstance();
 
-        // SQL query to retrieve the source ID based on sourceName and sourceTypeName
-        $sql = "SELECT s.PK_Source
-                ROM t_source s
-                JOIN t_type_source ts ON s.FK_Type_Source = ts.PK_type_source
-                WHERE s.Source = :source_name AND ts.type = :source_type_name";
-
-        // Parameters to bind
-        $params = array(
-            'source_name' => $sourceName,
-            'source_type_name' => $sourceTypeName
-        );
-
-        // Execute the query
-        $result = $db->SelectQuery($sql, $params);
-
-        // If result is found, return the source ID
-        if (count($result) > 0) {
-            return $result[0]['PK_Source'];
+        if (empty($sourceIds) || !is_array($sourceIds)) {
+            return false;
         }
 
-        // If no result, return false
-        return false;
+        $deletedCount = 0;
+
+        foreach ($sourceIds as $id) {
+            $sql = "DELETE FROM t_source WHERE PK_Source = :source_id";
+            $rowCount = $db->executeQuery($sql, array('source_id' => $id));
+            $deletedCount += $rowCount; // Count how many rows were deleted
+        }
+
+        // If at least one source was deleted, return true
+        return $deletedCount > 0;
     }
 
     public function deleteSet($idSet, $idCapSource, $idTunicSource, $idTrousersSource)
@@ -346,19 +338,22 @@ class DBArticleManager
         try {
             $db->beginTransaction();
 
-        // First delete the sources
-        $sourcesDeleted = $this->deleteSource($idCapSource, $idTunicSource, $idTrousersSource);
-
-        // If source deletion was successful, delete the set
-        if ($sourcesDeleted) {
             $sql = "DELETE FROM t_set WHERE PK_Set = :pk_set";
-            $rowCount = $db->executeQuery($sql, array('pk_set' => $idSet));
+            $rowCount  = $db->executeQuery($sql, array('pk_set' => $idSet));
 
-        } 
-        
-        $db->commitTransaction();
-        return $rowCount > 0;
-    
+            if ($rowCount ) {
+                $sourcesDeleted = $this->deleteSource([$idCapSource, $idTunicSource, $idTrousersSource]);
+            } else {
+                $sourcesDeleted = false;
+            }
+            
+            if ($sourcesDeleted) {
+                $db->commitTransaction();
+                return true;
+            } else {
+                $db->rollbackTransaction();
+                return false;
+            }
         } catch (Exception $e) {
             $db->rollbackTransaction();
             return false;

@@ -114,14 +114,11 @@ class servicesHttp {
     }
 
     updateSet(dataGiven, successCallback, errorCallback) {
-        const formData = dataGiven;
-        formData.append("action", "updateSet");
-
         $.ajax({
             type: "PUT",
             dataType: "xml",
             url: this.BASE_URL,
-            data: formData,
+            data: dataGiven,
             processData: false,
             contentType: false,
             success: successCallback,
@@ -130,17 +127,21 @@ class servicesHttp {
     }
 
     deleteSet(idSet, idCapSource, idTunicSource, idTrousersSource, successCallback, errorCallback) {
+        // Construct the XML request body
+        let xmlData = `<deleteRequest>
+            <idSet>${idSet}</idSet>
+            <idCapSource>${idCapSource}</idCapSource>
+            <idTunicSource>${idTunicSource}</idTunicSource>
+            <idTrousersSource>${idTrousersSource}</idTrousersSource>
+            </deleteRequest>`;
+    
         $.ajax({
             type: "DELETE",
             dataType: "xml",
             url: this.BASE_URL,
-            data: {
-                action: 'delete',
-                idSet: idSet,
-                idCapSource: idCapSource,
-                idTunicSource: idTunicSource,
-                idTrousersSource: idTrousersSource
-            },
+            data: xmlData,
+            processData: false,
+            contentType: "application/xml",
             success: successCallback,
             error: errorCallback
         });

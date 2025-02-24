@@ -391,17 +391,19 @@ switch ($_SERVER['REQUEST_METHOD']) {
             $imagePath = $_POST['existingImagePath'] ?? ''; // Assuming the old image path is sent
         }
 
-        // Fetch and update sources (Cap, Tunic, Trousers)
-        $armorCapSourceId = $_POST['armorCapSourceId'] ?? null;
-        $armorTunicSourceId = $_POST['armorTunicSourceId'] ?? null;
-        $armorTrousersSourceId = $_POST['armorTrousersSourceId'] ?? null;
+        $idCapSource = $_POST['idCapSource'] ?? null;
+        $idTunicSource = $_POST['idTunicSource'] ?? null;
+        $idTrousersSource = $_POST['idTrousersSource'] ?? null;
+    
+        // Assuming the selectedArmorId is passed in the form
+        $selectedArmorId = $_POST['selectedArmorId'] ?? null;    
 
-        $armorCapSourceObj = ($armorCapSource && $armorCapSourceType) ? new Source($armorCapSourceId, $armorCapSource, $armorCapSourceType) : null;
-        $armorTunicSourceObj = ($armorTunicSource && $armorTunicSourceType) ? new Source($armorTunicSourceId, $armorTunicSource, $armorTunicSourceType) : null;
-        $armorTrousersSourceObj = ($armorTrousersSource && $armorTrousersSourceType) ? new Source($armorTrousersSourceId, $armorTrousersSource, $armorTrousersSourceType) : null;
+        $armorCapSourceObj = ($armorCapSource && $armorCapSourceType) ? new Source($idCapSource, $armorCapSource, $armorCapSourceType) : null;
+        $armorTunicSourceObj = ($armorTunicSource && $armorTunicSourceType) ? new Source($idTunicSource, $armorTunicSource, $armorTunicSourceType) : null;
+        $armorTrousersSourceObj = ($armorTrousersSource && $armorTrousersSourceType) ? new Source($idTrousersSource, $armorTrousersSource, $armorTrousersSourceType) : null;
         // Create the Set object with the collected data
         $set = new Set(
-            $selectedArmorId,  // Assuming the ID of the set to update
+            $selectedArmorId,
             $_SESSION['user_id'],
             $armorName,
             $armorCapName,
@@ -409,9 +411,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
             $armorTrousersName,
             $armorDescription,
             $armorEffect,
-            $armorCapSourceId,
-            $armorTunicSourceId,
-            $armorTrousersSourceId,
+            $idCapSource,
+            $idTunicSource,
+            $idTrousersSource,
             $imagePath
         );
 
@@ -432,23 +434,27 @@ switch ($_SERVER['REQUEST_METHOD']) {
             break;
         }
         
-        // Read raw input (DELETE request data)
-        $inputData = json_decode(file_get_contents('php://input'), true);
+        // Read raw XML input
+        $xmlData = file_get_contents('php://input');
+        $xml = simplexml_load_string($xmlData);
+
+        if (!$xml) {
+            sendXMLResponse(false, 'Invalid XML format');
+            break;
+        }
     
-        // Collecting form data from the raw input
-        $idSet = $inputData['idSet'] ?? '';
-        $idCapSource = $inputData['idCapSource'] ?? '';
-        $idTunicSource = $inputData['idTunicSource'] ?? '';
-        $idTrousersSource = $inputData['idTrousersSource'] ?? '';
+        $idSet = (string) ($xml->idSet ?? '');
+        $idCapSource = (string) ($xml->idCapSource ?? '');
+        $idTunicSource = (string) ($xml->idTunicSource ?? '');
+        $idTrousersSource = (string) ($xml->idTrousersSource ?? '');
     
         if (empty($idSet) || empty($idCapSource) || empty($idTunicSource) || empty($idTrousersSource)) {
             sendXMLResponse(false, 'Missing required parameters');
             break;
-        }
+        }    
     
         // Proceed with the deletion
         $result = $articleManager->deleteSet($idSet, $idCapSource, $idTunicSource, $idTrousersSource);
-    
         // Send the response based on the result
         sendXMLResponse($result, $result ? 'Set and associated sources deleted successfully' : 'Failed to delete set');
         break;

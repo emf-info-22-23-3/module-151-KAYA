@@ -92,6 +92,10 @@ class ModifyCtrl {
                     pkSet, nom, capNom, tunicNom, trousersNom, description, effet, imageSet
                 });
 
+                localStorage.setItem('capSourceId', $(this).find('setWanted CapSource id').text());
+                localStorage.setItem('tunicSourceId', $(this).find('setWanted TunicSource id').text());
+                localStorage.setItem('trousersSourceId', $(this).find('setWanted TrousersSource id').text());
+
                 // Populate the form fields with the received data
                 $("#armorName").val(nom);
                 $("#armorCapName").val(capNom);
@@ -202,6 +206,7 @@ class ModifyCtrl {
                 position: "right",
                 backgroundColor: "green"
             }).showToast();
+            window.ctrl.resetForm();
         } else {
             Toastify({
                 text: "Failed to update armor set. Please try again.",
@@ -214,7 +219,23 @@ class ModifyCtrl {
     }
 
     deleteSetSuccess(response) {
-        const successElement = $(response).find('success').text();
+        console.log("Received data:", response);
+
+        // Check if the response is a string and parse if necessary
+        if (typeof response === "string") {
+            console.log("Response is a string, attempting to parse...");
+            response = $.parseXML(response);  // Convert string to XML document
+        }
+    
+        const $xml = $(response);  // jQuery-wrapped XML document
+    
+        // Log the success and message values
+        const successElement = $xml.find('success').text();
+        const messageElement = $xml.find('message').text();
+    
+        console.log("Success:", successElement);
+        console.log("Message:", messageElement);
+    console.log("Success Element:", successElement); // Check what the value of <success> is
         
         if (successElement === "true") {
             Toastify({
@@ -224,6 +245,7 @@ class ModifyCtrl {
                 position: "right",
                 backgroundColor: "green"
             }).showToast();
+            window.ctrl.resetForm();
         } else {
             Toastify({
                 text: "Failed to delete armor set. Please try again.",
@@ -269,7 +291,31 @@ class ModifyCtrl {
             backgroundColor: "#ff3333"
         }).showToast();
     }
+
+    resetForm() {
+        // Reset form fields
+        $("#armorName").val("");
+        $("#armorCapName").val("");
+        $("#armorTunicName").val("");
+        $("#armorTrousersName").val("");
+        $("#armorEffect").val("");
+        $("#armorDescription").val("");
     
+        // Reset dropdowns
+        $("#armorCapSourceType").empty();
+        $("#armorTunicSourceType").empty();
+        $("#armorTrousersSourceType").empty();
+        
+        // Reset file input
+        $("#armorImage").val("");
+    
+        // Optionally reset image previews or any other UI elements
+        $("#imagePreview").attr("src", "");  // Example for resetting image preview
+    
+        // Reset any other state or navigation
+        localStorage.removeItem('selectedArmorId');
+        window.location.href = "../views/admin.html"; // Redirect or reset to the main page
+    }
 }
 
 $(document).ready(function () {
@@ -286,14 +332,12 @@ $(document).ready(function () {
                 );
             });
     
-            // Process the data once getSourceTypes is complete
-            window.ctrl.getSourceTypesSuccess(data);
-    
-            if (selectedArmorId) {
+            if (selectedArmorId > 0) {
                 console.log("Selected Armor ID:", selectedArmorId);
-                window.ctrl.http.getAnnoncesForArmor(selectedArmorId, window.ctrl.getAnnoncesSuccess, window.ctrl.CallbackError);
+                window.ctrl.http.getAnnoncesForArmor(selectedArmorId, window.ctrl.getAnnoncesSuccess, window.ctrl.callbackError);
             } else {
                 console.log("No armor selected");
+                window.ctrl.resetForm();
                 window.location.href = "../views/admin.html";
             }
         } catch (error) {
@@ -303,29 +347,50 @@ $(document).ready(function () {
 
     $("#cancelButton").on("click", function () {
         console.log("Cancel button clicked, navigating to admin.html");
-        window.location.href = "../views/admin.html"; 
+        window.ctrl.resetForm();
     });
 
     $("#saveButton").on("click", function () {
-        const data = window.ctrl.collectFormData();
+        const data = window.ctrl.collectFormData();         
+        const selectedArmorId = localStorage.getItem('selectedArmorId');
+        const idSet = localStorage.getItem('selectedArmorId');
+        const idCapSource = localStorage.getItem('capSourceId'); 
+        const idTunicSource = localStorage.getItem('tunicSourceId'); 
+        const idTrousersSource = localStorage.getItem('trousersSourceId');
 
-        // Update the armor set data
-        window.ctrl.http.updateSet(data, function() {
-        }, window.ctrl.callbackError);
+        if (selectedArmorId && idSet && idCapSource && idTunicSource && idTrousersSource) {
+            data.selectedArmorId = idSet; 
+            data.idCapSource = idCapSource; 
+            data.idTunicSource = idTunicSource; 
+            data.idTrousersSource = idTrousersSource; 
+        } else {
+            console.error("Not all variables are found in localStorage");
+        }
+
+        console.log("Data to be sent:", data);
+
+        window.ctrl.http.updateSet(data, window.ctrl.updateSetSuccess, window.ctrl.callbackError);
     });
 
     $("#deleteButton").on("click", function () {
-        const idSet = $("#armorId").val();
-        const idCapSource = $("#armorCapSource").val();
-        const idTunicSource = $("#armorTunicSource").val();
-        const idTrousersSource = $("#armorTrousersSource").val();
-    
+        const idSet = localStorage.getItem('selectedArmorId') || '';
+        const idCapSource = localStorage.getItem('capSourceId') || ''; // Default to an empty string if null
+        const idTunicSource = localStorage.getItem('tunicSourceId') || ''; // Default to an empty string if null
+        const idTrousersSource = localStorage.getItem('trousersSourceId') || ''; // Default to an empty string if null
+
+        console.log("Deleting Armor Set with the following IDs:");
+        console.log("idSet:", idSet);
+        console.log("idCapSource:", idCapSource);
+        console.log("idTunicSource:", idTunicSource);
+        console.log("idTrousersSource:", idTrousersSource);
+        
         // Call deleteSet with the necessary data
         window.ctrl.http.deleteSet(
             idSet, 
             idCapSource, 
             idTunicSource, 
             idTrousersSource, 
+            window.ctrl.deleteSetSuccess(),
             window.ctrl.callbackError
         );
     });
