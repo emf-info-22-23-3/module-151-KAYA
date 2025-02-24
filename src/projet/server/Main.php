@@ -147,7 +147,6 @@ $articleManager = new ArticleManager();
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'POST':
         $action = $_POST['action'] ?? '';
-        echo "Action: $action\n";  // Debugging the received action (add this for debugging)
         
         switch($action) {
             case 'login':
