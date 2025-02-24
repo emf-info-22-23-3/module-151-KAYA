@@ -59,23 +59,26 @@ class ModifyCtrl {
     getAnnoncesSuccess(data) {
         console.log("getAnnoncesSuccess called");
         console.log("Received data:", data);
-    
+
         // Check if data is a string and parse it if necessary
         if (typeof data === "string") {
             console.log("Data is a string, attempting to parse...");
             data = $.parseXML(data);  // Convert string to XML document
         }
-    
+
         const $xml = $(data);  // jQuery-wrapped XML document
-    
+
         // Find all <set> elements inside the response
         const setWanted = $xml.find("response setWanted");
-    
+        const capSource = $xml.find("response setWanted CapSource");
+        const tunicSource = $xml.find("response setWanted TunicSource");
+        const trousersSource = $xml.find("response setWanted TrousersSource");
+
         console.log("Found <set> elements:", setWanted.length);
-    
+
         // Check if there are any valid <set> elements
-        if (setWanted.length > 0) {
-            setWanted.each(function() {
+        if (setWanted.length > 0 || capSource.length > 0 || tunicSource.length > 0 || trousersSource.length > 0) {
+            setWanted.each(function () {
                 const pkSet = $(this).find("id").text();  // Get the id
                 const nom = $(this).find("name").text();  // Get the name
                 const capNom = $(this).find("cap_name").text();  // Get the cap_name
@@ -84,11 +87,11 @@ class ModifyCtrl {
                 const description = $(this).find("description").text();  // Get the description
                 const effet = $(this).find("effect").text();  // Get the effect
                 const imageSet = $(this).find("image").text();  // Get the image
-    
+
                 console.log("Armor Set Data:", {
                     pkSet, nom, capNom, tunicNom, trousersNom, description, effet, imageSet
                 });
-    
+
                 // Populate the form fields with the received data
                 $("#armorName").val(nom);
                 $("#armorCapName").val(capNom);
@@ -96,12 +99,78 @@ class ModifyCtrl {
                 $("#armorTrousersName").val(trousersNom);
                 $("#armorEffect").val(effet);
                 $("#armorDescription").val(description);
-    
+
                 // Set the source type dropdowns
                 $("#armorCapSourceType").append($(this).find('cap_source').text());
                 $("#armorTunicSourceType").append($(this).find('tunic_source').text());
                 $("#armorTrousersSourceType").append($(this).find('trousers_source').text());
-    
+
+                // Show success toast
+                Toastify({
+                    text: "Armor set details loaded successfully",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#33cc33"
+                }).showToast();
+            });
+
+            capSource.each(function () {
+                const capSource = $(this).find("source").text();  // Get the cap_name
+                const capSourceType = $(this).find("type_source").text();  // Get the cap_name
+                // Populate the form fields with the received data
+                $("#armorCapSource").val(capSource);
+                // Set the source type dropdowns
+                $("#armorCapSourceType option").each(function () {
+                    if ($(this).val() === capSourceType) {
+                        $(this).prop("selected", true);  // Select the matching option
+                    }
+                });
+
+                // Show success toast
+                Toastify({
+                    text: "Armor set details loaded successfully",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#33cc33"
+                }).showToast();
+            });
+
+            tunicSource.each(function () {
+                const tunicSource = $(this).find("source").text();  // Get the cap_name
+                const tunicSourceType = $(this).find("type_source").text();  // Get the cap_name
+                // Populate the form fields with the received data
+                $("#armorTunicSource").val(tunicSource);
+                // Set the source type dropdowns
+                $("#armorTunicSourceType option").each(function () {
+                    if ($(this).val() === tunicSourceType) {
+                        $(this).prop("selected", true);  // Select the matching option
+                    }
+                });
+
+                // Show success toast
+                Toastify({
+                    text: "Armor set details loaded successfully",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#33cc33"
+                }).showToast();
+            });
+
+            trousersSource.each(function () {
+                const trousersSource = $(this).find("source").text();  // Get the cap_name
+                const trousersSourceType = $(this).find("type_source").text();  // Get the cap_name
+                // Populate the form fields with the received data
+                $("#armorTrousersSource").val(trousersSource);
+                // Set the source type dropdowns
+                $("#armorTrousersSourceType option").each(function () {
+                    if ($(this).val() === trousersSourceType) {
+                        $(this).prop("selected", true);  // Select the matching option
+                    }
+                });
+
                 // Show success toast
                 Toastify({
                     text: "Armor set details loaded successfully",
@@ -191,72 +260,6 @@ class ModifyCtrl {
         return formData;
     }
 
-    TransactionBeginSuccess(response) {
-        const successElement = $(response).find('success').text();
-        
-        if (successElement === "true") {
-            Toastify({
-                text: "Transaction has began successfully!",
-                duration: 3000,
-                gravity: "top",
-                position: "right",
-                backgroundColor: "green"
-            }).showToast();
-        } else {
-            Toastify({
-                text: "Failed to update armor set. Please try again.",
-                duration: 3000,
-                gravity: "top",
-                position: "right",
-                backgroundColor: "red"
-            }).showToast();
-        }
-    }
-
-    TransactionCommitSuccess(response) {
-        const successElement = $(response).find('success').text();
-        
-        if (successElement === "true") {
-            Toastify({
-                text: "Transaction has been commited successfully!",
-                duration: 3000,
-                gravity: "top",
-                position: "right",
-                backgroundColor: "green"
-            }).showToast();
-        } else {
-            Toastify({
-                text: "Failed to update armor set. Please try again.",
-                duration: 3000,
-                gravity: "top",
-                position: "right",
-                backgroundColor: "red"
-            }).showToast();
-        }
-    }
-
-    TransactionRollbackSuccess(response) {
-        const successElement = $(response).find('success').text();
-        
-        if (successElement === "true") {
-            Toastify({
-                text: "Transaction has rollback successfully!",
-                duration: 3000,
-                gravity: "top",
-                position: "right",
-                backgroundColor: "green"
-            }).showToast();
-        } else {
-            Toastify({
-                text: "Failed to update armor set. Please try again.",
-                duration: 3000,
-                gravity: "top",
-                position: "right",
-                backgroundColor: "red"
-            }).showToast();
-        }
-    }
-
     callbackError(request, status, error) {
         Toastify({
             text: "Error: " + error,
@@ -289,9 +292,6 @@ $(document).ready(function () {
             if (selectedArmorId) {
                 console.log("Selected Armor ID:", selectedArmorId);
                 window.ctrl.http.getAnnoncesForArmor(selectedArmorId, window.ctrl.getAnnoncesSuccess, window.ctrl.CallbackError);
-                
-                // Begin the transaction right after fetching the data
-                window.ctrl.http.beginTransaction(window.ctrl.TransactionBeginSuccess, window.ctrl.CallbackError);
             } else {
                 console.log("No armor selected");
                 window.location.href = "../views/admin.html";
@@ -303,8 +303,6 @@ $(document).ready(function () {
 
     $("#cancelButton").on("click", function () {
         console.log("Cancel button clicked, navigating to admin.html");
-        // Rollback the transaction and go back to the admin page
-        window.ctrl.http.rollbackTransaction(window.ctrl.TransactionRollbackSuccess, window.ctrl.CallbackError);
         window.location.href = "../views/admin.html"; 
     });
 
@@ -313,8 +311,6 @@ $(document).ready(function () {
 
         // Update the armor set data
         window.ctrl.http.updateSet(data, function() {
-            // After updating the set, commit the transaction
-            window.ctrl.http.commitTransaction(window.ctrl.TransactionCommitSuccess, window.ctrl.CallbackError);
         }, window.ctrl.callbackError);
     });
 
@@ -330,10 +326,6 @@ $(document).ready(function () {
             idCapSource, 
             idTunicSource, 
             idTrousersSource, 
-            function() {
-                // After deleting, commit the transaction
-                window.ctrl.http.commitTransaction(window.ctrl.TransactionCommitSuccess, window.ctrl.CallbackError);
-            }, 
             window.ctrl.callbackError
         );
     });

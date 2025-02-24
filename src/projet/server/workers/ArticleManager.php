@@ -37,7 +37,6 @@ class ArticleManager {
     }
 
     public function getSet($id) {
-        echo ("ArticleManager.getSet called with ID: " . $id);
         return $this->dbArticleManager->readSet($id);
     }
 
@@ -70,10 +69,6 @@ class ArticleManager {
         return $this->dbArticleManager->addSet($set);
     }
 
-    public function addSource($source) {
-        return $this->dbArticleManager->addSource($source);
-    }
-
     /**
      * updates a set from the database
      * 
@@ -82,22 +77,6 @@ class ArticleManager {
      */
     public function updateSet($set) {
         return $this->dbArticleManager->updateSet($set);
-    }
-
-    public function updateSource($source) {
-        return $this->dbArticleManager->updateSource($source);
-    }
-
-    public function beginTransaction() {
-        return $this->dbArticleManager->beginTransaction();
-    }
-
-    public function commitTransaction() {
-        return $this->dbArticleManager->commitTransaction();
-    }
-
-    public function rollbackTransaction() {
-        return $this->dbArticleManager->rollbackTransaction();
     }
 
     /**

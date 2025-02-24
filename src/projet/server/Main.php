@@ -171,66 +171,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 sendXMLResponseLogout(true, 'Logout successful');
                 break;
 
-                case 'beginTransaction':
-                    if (!isLoggedIn()) {
-                        sendXMLResponse(false, 'Please log in first');
-                        break;
-                    }
-            
-                    if (!isAdmin()) {
-                        sendXMLResponse(false, 'Administrator access required');
-                        break;
-                    }
-            
-                    $result = $articleManager->beginTransaction();
-            
-                    if ($result) {
-                        sendXMLResponse(true, 'Transaction has begun!');
-                    } else {
-                        sendXMLResponse(false, 'Failed to start the transaction');
-                    }
-                    break;
-            
-                case 'commitTransaction':
-                    if (!isLoggedIn()) {
-                        sendXMLResponse(false, 'Please log in first');
-                        break;
-                    }
-            
-                    if (!isAdmin()) {
-                        sendXMLResponse(false, 'Administrator access required');
-                        break;
-                    }
-            
-                    $result = $articleManager->commitTransaction();
-            
-                    if ($result) {
-                        sendXMLResponse(true, 'Transaction has been committed!');
-                    } else {
-                        sendXMLResponse(false, 'Failed to commit the transaction');
-                    }
-                    break;
-            
-                case 'rollbackTransaction':
-                    if (!isLoggedIn()) {
-                        sendXMLResponse(false, 'Please log in first');
-                        break;
-                    }
-            
-                    if (!isAdmin()) {
-                        sendXMLResponse(false, 'Administrator access required');
-                        break;
-                    }
-            
-                    $result = $articleManager->rollbackTransaction();
-            
-                    if ($result) {
-                        sendXMLResponse(true, 'Transaction has been rolled back!');
-                    } else {
-                        sendXMLResponse(false, 'Failed to roll back the transaction');
-                    }
-                    break;
-
             case 'addSet':
                 if (!isLoggedIn()) {
                     sendXMLResponse(false, 'Please log in first');
@@ -243,31 +183,19 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 }
                 // Collecting form data
                 $armorName = $_POST['armorName'] ?? '';
-                echo "Armor Name: $armorName\n";  // Debugging armor name
                 $armorCapName = $_POST['armorCapName'] ?? '';
-                echo "Cap Name: $armorCapName\n";  // Debugging cap name
                 $armorTunicName = $_POST['armorTunicName'] ?? '';
-                echo "Tunic Name: $armorTunicName\n";  // Debugging tunic name
                 $armorTrousersName = $_POST['armorTrousersName'] ?? '';
-                echo "Trousers Name: $armorTrousersName\n";  // Debugging trousers name
                 $armorEffect = $_POST['armorEffect'] ?? '';
-                echo "Effect: $armorEffect\n";  // Debugging effect
                 $armorDescription = $_POST['armorDescription'] ?? '';
-                echo "Description: $armorDescription\n";  // Debugging description
 
                 // Collecting source type and source values
                 $armorCapSourceType = $_POST['armorCapSourceType'] ?? '';
-                echo "Cap Source Type: $armorCapSourceType\n";  // Debugging cap source type
                 $armorCapSource = $_POST['armorCapSource'] ?? '';
-                echo "Cap Source: $armorCapSource\n";  // Debugging cap source
                 $armorTunicSourceType = $_POST['armorTunicSourceType'] ?? '';
-                echo "Tunic Source Type: $armorTunicSourceType\n";  // Debugging tunic source type
                 $armorTunicSource = $_POST['armorTunicSource'] ?? '';
-                echo "Tunic Source: $armorTunicSource\n";  // Debugging tunic source
                 $armorTrousersSourceType = $_POST['armorTrousersSourceType'] ?? '';
-                echo "Trousers Source Type: $armorTrousersSourceType\n";  // Debugging trousers source type
                 $armorTrousersSource = $_POST['armorTrousersSource'] ?? '';
-                echo "Trousers Source: $armorTrousersSource\n";  // Debugging trousers source
             
                 // Handling the uploaded image (if exists)
                 if (isset($_FILES['armorImage']) && $_FILES['armorImage']['error'] === UPLOAD_ERR_OK) {
@@ -297,12 +225,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     $armorTrousersSourceType
                 );
 
-                // Create threee Source object with the sourceType data and source data
-                $armorCapSourceId = $articleManager->addSource($armorCapSourceNew);
-                $armorTunicSourceId = $articleManager->addSource($armorTunicSourceNew);
-                $armorTrousersSourceId = $articleManager->addSource($armorTrousersSourceNew);
-            
-                // Create a Set object with the collected data
                 $set = new Set(
                     null,
                     $_SESSION['user_id'],
@@ -312,14 +234,14 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     $armorTrousersName,
                     $armorDescription,
                     $armorEffect,
-                    $armorCapSourceId,
-                    $armorTunicSourceId,
-                    $armorTrousersSourceId,
+                    null, // Placeholder for Cap source ID
+                    null, // Placeholder for Tunic source ID
+                    null, // Placeholder for Trousers source ID
                     $imagePath
                 );
             
-                // Call the manager to add the set
-                $result = $articleManager->addSet($set);
+                // Call the manager to add the set, passing the sources too
+                $result = $articleManager->addSet($set, $armorCapSourceNew, $armorTunicSourceNew, $armorTrousersSourceNew);
             
                 sendXMLResponse($result !== false, $result ? 'Set added successfully' : 'Failed to add set');
                 break;
@@ -418,7 +340,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     sendXMLResponse(false, 'Please log in first');
                     break;
                 }
-
                 $sourceTypes = $articleManager->getSourceTypes();
                 if ($sourceTypes) {
                     sendXMLResponse(true, 'sourceTypes found', array('sourceTypes' => $sourceTypes));
@@ -430,10 +351,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     sendXMLResponse(false, 'sourceTypes not found');
                     break;
                 }
+            break;
 
-                break;
         }
-
+        break;
     case 'PUT':
         if (!isLoggedIn()) {
             sendXMLResponse(false, 'Please log in first');
@@ -475,17 +396,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $armorTunicSourceId = $_POST['armorTunicSourceId'] ?? null;
         $armorTrousersSourceId = $_POST['armorTrousersSourceId'] ?? null;
 
-        // Update sources if necessary
-        if ($armorCapSource && $armorCapSourceType) {
-            $articleManager->updateSource($armorCapSourceId, $armorCapSource, $armorCapSourceType);
-        }
-        if ($armorTunicSource && $armorTunicSourceType) {
-            $articleManager->updateSource($armorTunicSourceId, $armorTunicSource, $armorTunicSourceType);
-        }
-        if ($armorTrousersSource && $armorTrousersSourceType) {
-            $articleManager->updateSource($armorTrousersSourceId, $armorTrousersSource, $armorTrousersSourceType);
-        }
-
+        $armorCapSourceObj = ($armorCapSource && $armorCapSourceType) ? new Source($armorCapSourceId, $armorCapSource, $armorCapSourceType) : null;
+        $armorTunicSourceObj = ($armorTunicSource && $armorTunicSourceType) ? new Source($armorTunicSourceId, $armorTunicSource, $armorTunicSourceType) : null;
+        $armorTrousersSourceObj = ($armorTrousersSource && $armorTrousersSourceType) ? new Source($armorTrousersSourceId, $armorTrousersSource, $armorTrousersSourceType) : null;
         // Create the Set object with the collected data
         $set = new Set(
             $selectedArmorId,  // Assuming the ID of the set to update
@@ -503,7 +416,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
         );
 
         // Update the armor set
-        $result = $articleManager->updateSet($set);
+        $result = $articleManager->updateSet($set, $armorCapSourceObj, $armorTunicSourceObj, $armorTrousersSourceObj);
 
         sendXMLResponse($result, $result ? 'Set updated successfully' : 'Failed to update set');
         break;

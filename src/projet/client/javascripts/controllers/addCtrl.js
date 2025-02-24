@@ -22,7 +22,7 @@ class AddCtrl {
         //console.log("Parsed XML:", $xml);
     
         // Find the deepest sourceTypes (those that contain pk_type_source and type)
-        const sourceTypes = $xml.find("response sourceTypes sourceTypes sourceType");
+        const sourceTypes = $xml.find("response sourceTypes sourceType");
     
         console.log("Found source types:", sourceTypes.length);
     
