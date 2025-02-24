@@ -25,7 +25,6 @@ session_start();
  * @param array $data Optional data to include in response
  */
 function sendXMLResponse($success, $message = '', $data = null) {
-<<<<<<< HEAD
     echo "<response>\n";
     echo "  <success>" . ($success ? 'true' : 'false') . "</success>\n";
 
@@ -35,19 +34,6 @@ function sendXMLResponse($success, $message = '', $data = null) {
 
     if ($data) {
         if (isset($data['set'])) {
-=======
-
-    echo "<response>\n";
-    echo "  <success>" . ($success ? 'true' : 'false') . "</success>\n";
-    
-    if ($message) {
-        echo "  <message>" . htmlspecialchars($message, ENT_XML1, 'UTF-8') . "</message>\n";
-    }
-    
-    if ($data) {
-        if (isset($data['set'])) {
-            // Handle the case where 'set' is an associative array
->>>>>>> 01ab6c588445077e392e6004dfdb7dc77b8ae620
             $set = $data['set'];
             echo "  <setWanted>\n";
             foreach ($set as $key => $value) {
@@ -55,7 +41,6 @@ function sendXMLResponse($success, $message = '', $data = null) {
                      . htmlspecialchars($value, ENT_XML1, 'UTF-8') 
                      . "</" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
             }
-<<<<<<< HEAD
 
             // Handle sources inside the set
             foreach (['CapSource', 'TunicSource', 'TrousersSource'] as $sourceKey) {
@@ -92,96 +77,20 @@ function sendXMLResponse($success, $message = '', $data = null) {
         // Handling armor data
         foreach ($data as $key => $items) {
             if ($key !== 'set' && $key !== 'sourceTypes' && !in_array($key, ['CapSource', 'TunicSource', 'TrousersSource'])) {
-=======
-            
-            // Now handle the sources inside the set
-            if (isset($data['CapSource'])) {
-                $CapSource = $data['CapSource'];
-                echo "    <CapSource>\n";
-                foreach ($CapSource as $key => $value) {
-                    echo "      <" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">" 
-                         . htmlspecialchars($value, ENT_XML1, 'UTF-8') 
-                         . "</" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
-                }
-                echo "    </CapSource>\n";
-            }
-
-            if (isset($data['TunicSource'])) {
-                $TunicSource = $data['TunicSource'];
-                echo "    <TunicSource>\n";
-                foreach ($TunicSource as $key => $value) {
-                    echo "      <" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">" 
-                         . htmlspecialchars($value, ENT_XML1, 'UTF-8') 
-                         . "</" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
-                }
-                echo "    </TunicSource>\n";
-            }
-
-            if (isset($data['TrousersSource'])) {
-                $TrousersSource = $data['TrousersSource'];
-                echo "    <TrousersSource>\n";
-                foreach ($TrousersSource as $key => $value) {
-                    echo "      <" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">" 
-                         . htmlspecialchars($value, ENT_XML1, 'UTF-8') 
-                         . "</" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
-                }
-                echo "    </TrousersSource>\n";
-            }
-
-            echo "  </setWanted>\n";
-        } 
-        
-        if (isset($data['sourceTypes']) && is_array($data['sourceTypes']) && count($data['sourceTypes']) > 0) {
-            echo "  <sourceTypes>\n";
-            
-            // Loop through the sourceTypes array
-            foreach ($data as $key => $items) {
-                // Start the container element (e.g., <sourceTypes>)
-                echo "  <" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
-                if (is_array($items)) {
-                    foreach ($items as $item) {
-                        if (is_array($item)) {
-                            echo "    <sourceType>\n";
-                            foreach ($item as $itemKey => $itemValue) {
-                               echo "      <" . htmlspecialchars($itemKey, ENT_XML1, 'UTF-8') . ">" 
-                                    . htmlspecialchars($itemValue, ENT_XML1, 'UTF-8') 
-                                    . "</" . htmlspecialchars($itemKey, ENT_XML1, 'UTF-8') . ">\n";
-                            }
-                            echo "    </sourceType>\n";
-                        }
-                    }
-                }
-                // Close the container element
-                echo "  </" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
-            }
-            
-            echo "  </sourceTypes>\n";
-
-        } else {
-            foreach ($data as $key => $items) {
-                // Start the container element (e.g., <armorNames>)
->>>>>>> 01ab6c588445077e392e6004dfdb7dc77b8ae620
                 echo "  <" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
                 if (is_array($items)) {
                     foreach ($items as $item) {
                         if (is_array($item)) {
                             echo "    <armor>\n";
                             foreach ($item as $itemKey => $itemValue) {
-<<<<<<< HEAD
                                 echo "      <" . htmlspecialchars($itemKey, ENT_XML1, 'UTF-8') . ">" 
                                      . htmlspecialchars($itemValue, ENT_XML1, 'UTF-8') 
                                      . "</" . htmlspecialchars($itemKey, ENT_XML1, 'UTF-8') . ">\n";
-=======
-                               echo "      <" . htmlspecialchars($itemKey, ENT_XML1, 'UTF-8') . ">" 
-                                    . htmlspecialchars($itemValue, ENT_XML1, 'UTF-8') 
-                                    . "</" . htmlspecialchars($itemKey, ENT_XML1, 'UTF-8') . ">\n";
->>>>>>> 01ab6c588445077e392e6004dfdb7dc77b8ae620
                             }
                             echo "    </armor>\n";
                         }
                     }
                 }
-<<<<<<< HEAD
                 echo "  </" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
             }
         }
@@ -192,18 +101,6 @@ function sendXMLResponse($success, $message = '', $data = null) {
 }
 
 
-=======
-                // Close the container element
-                echo "  </" . htmlspecialchars($key, ENT_XML1, 'UTF-8') . ">\n";
-            }
-        }
-
-        echo "</response>";
-        exit;
-    }
-}
-
->>>>>>> 01ab6c588445077e392e6004dfdb7dc77b8ae620
 function sendXMLResponseLogin($success, $message = '', $data = null) {
     header('Content-Type: text/xml');
     echo "<?xml version='1.0' encoding='UTF-8'?>\n";
@@ -460,11 +357,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                         'tunic_source' => $set->getFkTunicSource(),
                         'trousers_source' => $set->getFkTrousersSource(),
                         'image' => $set->getImageSet()
-<<<<<<< HEAD
                     );
-=======
-                    )
->>>>>>> 01ab6c588445077e392e6004dfdb7dc77b8ae620
 
                     // Retrieve the Source objects using foreign keys (assuming FK_Type_Source for each)
                     $CapSource = $articleManager->readSourceByID($set->getFkCapSource()); 
@@ -474,7 +367,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     // Prepare the response array with the set and source objects
                     $response = [
                         'set' => $setData,
-<<<<<<< HEAD
                         'CapSource' => $CapSource ? [
                             'id' => $CapSource->getId(),
                             'source' => $CapSource->getSource(),
@@ -491,12 +383,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
                             'type_source' => $TrousersSource->getTypeSourceId()
                         ] : null
                     ];                    
-=======
-                        'CapSource' => $CapSource ? $CapSource : null,  // Null if not found
-                        'TunicSource' => $TunicSource ? $TunicSource : null,  // Null if not found
-                        'TrousersSource' => $TrousersSource ? $TrousersSource : null   // Null if not found
-                    ];
->>>>>>> 01ab6c588445077e392e6004dfdb7dc77b8ae620
             
                     // Send the response with the set and the source objects
                     sendXMLResponse(true, '', $response);
