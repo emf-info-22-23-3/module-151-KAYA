@@ -20,7 +20,7 @@ class UserManager
      * @param string $password
      * @return User|false Retourne l'objet User si les identifiants sont valides, false sinon.
      */
-    public function checkCredentials($email, $password)
+    public function checkCredentials($email, $password) 
     {
         $user = $this->dbManager->checkLogin($email);
         if ($user) {
