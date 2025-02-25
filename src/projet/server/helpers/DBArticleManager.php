@@ -7,9 +7,9 @@
 class DBArticleManager
 {
     /**
-     * Récupère tous les sets depuis la base de données.
+     * Retrieves all sets from the database.
      *
-     * @return array Tableau d'objets Set
+     * @return array Array of Set objects
      */
     public function readSets()
     {
@@ -50,7 +50,12 @@ class DBArticleManager
         return $sets;
     }
 
-    //needs to return the id based on the sourceName and sourceTypeName
+    /**
+     * Retrieves a source by its ID from the database.
+     *
+     * @param int $sourceID The ID of the source to retrieve
+     * @return Source|false A Source object if found, otherwise false
+     */
     public function readSourceByID($sourceID)
     {
         $db = DBConnection::getInstance();
@@ -72,6 +77,12 @@ class DBArticleManager
         return false;
     }
 
+    /**
+     * Retrieves a specific set by its ID from the database.
+     *
+     * @param int $id The ID of the set to retrieve
+     * @return Set|false A Set object if found, otherwise false
+     */
     public function readSet($id) 
     {
         $db = DBConnection::getInstance();
@@ -112,6 +123,11 @@ class DBArticleManager
         return false;
     }
 
+    /**
+     * Retrieves all source types from the database.
+     *
+     * @return array|false Array of SourceType objects if found, otherwise false
+     */
     public function readSourceTypes() {
         $db = DBConnection::getInstance();
         $sql = "SELECT PK_type_source, type FROM t_type_source";
@@ -133,71 +149,82 @@ class DBArticleManager
         return false;
     }
     
-    
     /**
-     * Ajoute un nouveau set dans la base de données.
+     * Adds a new set to the database.
      *
-     * @param Set $set Le set à ajouter
-     * @return int L'ID du set ajouté
+     * @param Set $set The set object to add
+     * @param string $armorCapSource The source for the cap armor
+     * @param string $armorTunicSource The source for the tunic armor
+     * @param string $armorTrousersSource The source for the trousers armor
+     * @return int|false The ID of the added set if successful, otherwise false
      */
     public function addSet($set, $armorCapSource, $armorTunicSource, $armorTrousersSource)
-{
-    $db = DBConnection::getInstance();
+    {
+        $db = DBConnection::getInstance();
 
-    try {
-        $db->beginTransaction();
+        try {
+            $db->beginTransaction();
 
-        // Insert sources and get their IDs
-        $armorCapSourceId = $this->addSource($armorCapSource);
-        $armorTunicSourceId = $this->addSource($armorTunicSource);
-        $armorTrousersSourceId = $this->addSource($armorTrousersSource);
+            // Insert sources and get their IDs
+            $armorCapSourceId = $this->addSource($armorCapSource);
+            $armorTunicSourceId = $this->addSource($armorTunicSource);
+            $armorTrousersSourceId = $this->addSource($armorTrousersSource);
 
-        // Now, set the source IDs in the set object
-        $set->setFkCapSource($armorCapSourceId);
-        $set->setFkTunicSource($armorTunicSourceId);
-        $set->setFkTrousersSource($armorTrousersSourceId);
+            // Now, set the source IDs in the set object
+            $set->setFkCapSource($armorCapSourceId);
+            $set->setFkTunicSource($armorTunicSourceId);
+            $set->setFkTrousersSource($armorTrousersSourceId);
 
-        // SQL query to insert into t_set table
-        $sql = "INSERT INTO t_set (
-                    FK_User, Nom, Cap_Nom, Tunic_Nom, Trousers_Nom,
-                    Description, Effet, FK_Cap_Source, FK_Tunic_Source,
-                    FK_Trousers_Source, Image_Set
-                ) VALUES (
-                    :fk_user, :nom, :cap_nom, :tunic_nom, :trousers_nom,
-                    :description, :effet, :fk_cap_source, :fk_tunic_source,
-                    :fk_trousers_source, :image_set
-                )";
+            // SQL query to insert into t_set table
+            $sql = "INSERT INTO t_set (
+                        FK_User, Nom, Cap_Nom, Tunic_Nom, Trousers_Nom,
+                        Description, Effet, FK_Cap_Source, FK_Tunic_Source,
+                        FK_Trousers_Source, Image_Set
+                    ) VALUES (
+                        :fk_user, :nom, :cap_nom, :tunic_nom, :trousers_nom,
+                        :description, :effet, :fk_cap_source, :fk_tunic_source,
+                        :fk_trousers_source, :image_set
+                    )";
 
-        // Parameters to bind, including the newly inserted source IDs
-        $params = array(
-            'fk_user' => $set->getFkUser(),
-            'nom' => $set->getNom(),
-            'cap_nom' => $set->getCapNom(),
-            'tunic_nom' => $set->getTunicNom(),
-            'trousers_nom' => $set->getTrousersNom(),
-            'description' => $set->getDescription(),
-            'effet' => $set->getEffet(),
-            'fk_cap_source' => $set->getFkCapSource(),
-            'fk_tunic_source' => $set->getFkTunicSource(),
-            'fk_trousers_source' => $set->getFkTrousersSource(),
-            'image_set' => $set->getImageSet()
-        );
+            // Parameters to bind, including the newly inserted source IDs
+            $params = array(
+                'fk_user' => $set->getFkUser(),
+                'nom' => $set->getNom(),
+                'cap_nom' => $set->getCapNom(),
+                'tunic_nom' => $set->getTunicNom(),
+                'trousers_nom' => $set->getTrousersNom(),
+                'description' => $set->getDescription(),
+                'effet' => $set->getEffet(),
+                'fk_cap_source' => $set->getFkCapSource(),
+                'fk_tunic_source' => $set->getFkTunicSource(),
+                'fk_trousers_source' => $set->getFkTrousersSource(),
+                'image_set' => $set->getImageSet()
+            );
 
-        // Execute the query to insert the set
-        $db->executeQuery($sql, $params);
+            // Execute the query to insert the set
+            $db->executeQuery($sql, $params);
 
-        // Commit the transaction
-        $db->commitTransaction();
+            // Commit the transaction
+            $db->commitTransaction();
 
-        return $db->getLastId("t_set");
+            return $db->getLastId("t_set");
 
-    } catch (Exception $e) {
-        // Rollback transaction if an error occurs
-        $db->rollbackTransaction();
-        return false;
+        } catch (Exception $e) {
+            // Rollback transaction if an error occurs
+            $db->rollbackTransaction();
+            return false;
+        }
     }
-}
-
+    
+    /**
+     * Adds a new source to the database.
+     *
+     * This function inserts a new record into the t_source table with the provided source name 
+     * and the foreign key reference to the source type.
+     *
+     * @param Source $source The source object containing the data to be inserted.
+     * @return int The last inserted ID from the t_source table.
+     */
     public function addSource($source)
     {
         $db = DBConnection::getInstance();
@@ -222,6 +249,15 @@ class DBArticleManager
         return $db->getLastId("t_source");
     }
 
+    /**
+     * Updates an existing source in the database.
+     *
+     * This function updates the source record in the t_source table identified by the 
+     * primary key with the provided new data.
+     *
+     * @param Source $sourceObject The source object containing the new data to be updated.
+     * @return bool True if the update was successful, false otherwise.
+     */
     public function updateSource($sourceObject)
     {
         $db = DBConnection::getInstance();
@@ -247,12 +283,18 @@ class DBArticleManager
         return $db->executeQuery($sql, $params);
     }
 
-
     /**
-     * Met à jour un set existant dans la base de données.
+     * Updates an existing set in the database.
      *
-     * @param Set $set Le set à modifier
-     * @return bool true si la mise à jour a réussi, false sinon
+     * This function updates the details of a set (including the associated source records) 
+     * in the t_set table. It ensures that the source records are updated first before updating 
+     * the set itself.
+     *
+     * @param Set $set The set object containing the updated data.
+     * @param Source $armorCapSourceObj The updated source for the cap.
+     * @param Source $armorTunicSourceObj The updated source for the tunic.
+     * @param Source $armorTrousersSourceObj The updated source for the trousers.
+     * @return bool True if the update was successful, false otherwise.
      */
     public function updateSet($set, $armorCapSourceObj, $armorTunicSourceObj, $armorTrousersSourceObj)
     {
@@ -268,8 +310,8 @@ class DBArticleManager
 
             // If source deletion was successful, delete the set
             if ($updatedCapSource && $updatedTunicSource &&  $updatedTrousersSource) {
-                    // SQL query to update the set in t_set table
-            $sql = "UPDATE t_set SET
+                // SQL query to update the set in t_set table
+                $sql = "UPDATE t_set SET
                     FK_User = :fk_user,
                     Nom = :nom,
                     Cap_Nom = :cap_nom,
@@ -283,34 +325,42 @@ class DBArticleManager
                     Image_Set = :image_set
                 WHERE pk_set = :pk_set";
 
-            // Parameters to bind
-            $params = array(
-                'fk_user' => $set->getFkUser(),
-                'nom' => $set->getNom(),
-                'cap_nom' => $set->getCapNom(),
-                'tunic_nom' => $set->getTunicNom(),
-                'trousers_nom' => $set->getTrousersNom(),
-                'description' => $set->getDescription(),
-                'effet' => $set->getEffet(),
-                'fk_cap_source' => $set->getFkCapSource(),
-                'fk_tunic_source' => $set->getFkTunicSource(),
-                'fk_trousers_source' => $set->getFkTrousersSource(),
-                'image_set' => $set->getImageSet(),
-                'pk_set' => $set->getPkSet() 
-            );
+                // Parameters to bind
+                $params = array(
+                    'fk_user' => $set->getFkUser(),
+                    'nom' => $set->getNom(),
+                    'cap_nom' => $set->getCapNom(),
+                    'tunic_nom' => $set->getTunicNom(),
+                    'trousers_nom' => $set->getTrousersNom(),
+                    'description' => $set->getDescription(),
+                    'effet' => $set->getEffet(),
+                    'fk_cap_source' => $set->getFkCapSource(),
+                    'fk_tunic_source' => $set->getFkTunicSource(),
+                    'fk_trousers_source' => $set->getFkTrousersSource(),
+                    'image_set' => $set->getImageSet(),
+                    'pk_set' => $set->getPkSet() 
+                );
 
-            $rowCount = $db->executeQuery($sql, $params);
-            
+                $rowCount = $db->executeQuery($sql, $params);
             } 
-        $db->commitTransaction();
-        return $rowCount > 0;
-            
+            $db->commitTransaction();
+            return $rowCount > 0;
+
         } catch (Exception $e) {
             $db->rollbackTransaction();
             return false;
         }
     }
 
+    /**
+     * Deletes source records from the database.
+     *
+     * This function deletes the source records identified by the provided array of source IDs 
+     * from the t_source table.
+     *
+     * @param array $sourceIds Array of source IDs to be deleted.
+     * @return bool True if at least one source was deleted, false otherwise.
+     */
     public function deleteSource($sourceIds)
     {
         $db = DBConnection::getInstance();
@@ -331,6 +381,18 @@ class DBArticleManager
         return $deletedCount > 0;
     }
 
+    /**
+     * Deletes a set and its associated sources from the database.
+     *
+     * This function deletes the set record and the associated source records from the t_source table 
+     * using a transaction to ensure both are deleted or none at all.
+     *
+     * @param int $idSet The ID of the set to be deleted.
+     * @param int $idCapSource The ID of the cap source to be deleted.
+     * @param int $idTunicSource The ID of the tunic source to be deleted.
+     * @param int $idTrousersSource The ID of the trousers source to be deleted.
+     * @return bool True if the set and sources were deleted successfully, false otherwise.
+     */
     public function deleteSet($idSet, $idCapSource, $idTunicSource, $idTrousersSource)
     {
         $db = DBConnection::getInstance();
@@ -346,7 +408,7 @@ class DBArticleManager
             } else {
                 $sourcesDeleted = false;
             }
-            
+
             if ($sourcesDeleted) {
                 $db->commitTransaction();
                 return true;
@@ -361,9 +423,11 @@ class DBArticleManager
     }
 
     /**
-     * Génère une représentation XML de tous les sets.
+     * Generates an XML representation of all sets.
      *
-     * @return string La liste des sets au format XML
+     * This function converts the list of all sets into an XML format for export or other uses.
+     *
+     * @return string The list of sets in XML format.
      */
     public function getInXML()
     {

@@ -22,82 +22,94 @@
     </header>
 
     <main class="main-content">
+        <!-- Section pour afficher l'information sur l'utilisateur (type et rôle) -->
         <div class="user-info">
-            <div class="user-type" id="userType">Visitor</div>
-            <div class="user-role" id="userRole">Client/Administrator</div>
+            <div class="user-type" id="userType">Visitor</div> <!-- Affiche si l'utilisateur est un visiteur -->
+            <div class="user-role" id="userRole">Client/Administrator</div> <!-- Affiche si l'utilisateur est un client ou un administrateur -->
         </div>
 
-        <!-- New container for title and buttons with border -->
+        <!-- Nouveau conteneur pour le titre et les boutons, avec une bordure -->
         <div class="title-buttons-container">
-            <h1>Armours</h1>
-            <hr>
-            <button id="addButton">Add</button>
-            <button id="modifyButton">Modify</button>
+            <h1>Armours</h1> <!-- Titre secondaire pour la section des armures -->
+            <hr> <!-- Séparateur horizontal -->
+            <button id="addButton">Add</button> <!-- Bouton pour ajouter une nouvelle armure -->
+            <button id="modifyButton">Modify</button> <!-- Bouton pour modifier une armure existante -->
         </div>
 
+        <!-- Conteneur pour le formulaire de sélection d'armure -->
         <div class="form-group">
-            <label for="armorNameSelect">Select Armor:</label>
+            <label for="armorNameSelect">Select Armor:</label> <!-- Légende pour le menu de sélection d'armure -->
             <div class="source-group">
                 <select id="armorNameSelect">
-                    <!-- Armor names will be populated here -->
+                    <!-- Les noms des armures seront ajoutés ici via JavaScript -->
                 </select>
             </div>
         </div>
 
-        <!-- Container for form with a border -->
+        <!-- Conteneur du formulaire avec une bordure pour ajouter ou modifier une armure -->
         <div class="form-container">
             <form id="addArmorForm">
+                <!-- Champ pour saisir le nom de l'armure -->
                 <div class="form-group">
                     <label for="armorName">Armor Name:</label>
-                    <input type="text" id="armorName" required>
+                    <input type="text" id="armorName" required> <!-- Champ de texte pour le nom de l'armure -->
                 </div>
+                <!-- Champ pour saisir le nom du cap -->
                 <div class="form-group">
                     <label for="armorCapName">Cap Name:</label>
-                    <textarea id="armorCapName" required></textarea>
+                    <textarea id="armorCapName" required></textarea> <!-- Zone de texte pour le nom du cap -->
                 </div>
+                <!-- Champ pour saisir la source du cap -->
                 <div class="form-group">
                     <label for="armorCapSource">Cap Source:</label>
                     <div class="source-group">
-                        <select id="armorCapSourceType">
+                        <select id="armorCapSourceType"> <!-- Sélection de type de source pour le cap -->
                         </select>
-                        <textarea id="armorCapSource" required></textarea>
+                        <textarea id="armorCapSource" required></textarea> <!-- Zone de texte pour la source du cap -->
                     </div>
                 </div>
+                <!-- Champ pour saisir le nom du tunique -->
                 <div class="form-group">
                     <label for="armorTunicName">Tunic Name:</label>
-                    <textarea id="armorTunicName" required></textarea>
+                    <textarea id="armorTunicName" required></textarea> <!-- Zone de texte pour le nom de la tunique -->
                 </div>
+                <!-- Champ pour saisir la source de la tunique -->
                 <div class="form-group">
                     <label for="armorTunicSource">Tunic Source:</label>
                     <div class="source-group">
-                        <select id="armorTunicSourceType">
+                        <select id="armorTunicSourceType"> <!-- Sélection de type de source pour la tunique -->
                         </select>
-                        <textarea id="armorTunicSource" required></textarea>
+                        <textarea id="armorTunicSource" required></textarea> <!-- Zone de texte pour la source de la tunique -->
                     </div>
                 </div>
+                <!-- Champ pour saisir le nom des pantalons -->
                 <div class="form-group">
                     <label for="armorTrousersName">Trousers Name:</label>
-                    <textarea id="armorTrousersName" required></textarea>
+                    <textarea id="armorTrousersName" required></textarea> <!-- Zone de texte pour le nom des pantalons -->
                 </div>
+                <!-- Champ pour saisir la source des pantalons -->
                 <div class="form-group">
                     <label for="armorTrousersSource">Trousers Source:</label>
                     <div class="source-group">
-                        <select id="armorTrousersSourceType">
+                        <select id="armorTrousersSourceType"> <!-- Sélection de type de source pour les pantalons -->
                         </select>
-                        <textarea id="armorTrousersSource" required></textarea>
+                        <textarea id="armorTrousersSource" required></textarea> <!-- Zone de texte pour la source des pantalons -->
                     </div>
                 </div>
+                <!-- Champ pour saisir l'effet de l'armure -->
                 <div class="form-group">
                     <label for="armorEffect">Effect:</label>
-                    <textarea id="armorEffect" required></textarea>
+                    <textarea id="armorEffect" required></textarea> <!-- Zone de texte pour l'effet de l'armure -->
                 </div>
+                <!-- Champ pour saisir la description de l'armure -->
                 <div class="form-group">
                     <label for="armorDescription">Description:</label>
-                    <textarea id="armorDescription" required></textarea>
+                    <textarea id="armorDescription" required></textarea> <!-- Zone de texte pour la description de l'armure -->
                 </div>
+                <!-- Champ pour télécharger l'image de l'armure -->
                 <div class="form-group">
                     <label for="armorImage">Upload Image:</label>
-                    <input type="file" id="armorImage" accept="image/*">
+                    <input type="file" id="armorImage" accept="image/*"> <!-- Champ pour télécharger l'image (seulement des fichiers image) -->
                 </div>
             </form>
         </div>

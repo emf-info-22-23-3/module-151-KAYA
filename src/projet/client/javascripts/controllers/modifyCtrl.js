@@ -1,11 +1,15 @@
 class ModifyCtrl {
     constructor() {
-        this.http = new servicesHttp();
-        this.callbackError = this.callbackError.bind(this);
-        this.getSourceTypesSuccess = this.getSourceTypesSuccess.bind(this);
-        this.collectFormData = this.collectFormData.bind(this);
+        this.http = new servicesHttp(); // Initializes the HTTP service for communication with the server
+        this.callbackError = this.callbackError.bind(this); // Binds the callbackError method to this context
+        this.getSourceTypesSuccess = this.getSourceTypesSuccess.bind(this); // Binds the getSourceTypesSuccess method to this context
+        this.collectFormData = this.collectFormData.bind(this); // Binds the collectFormData method to this context
     }
 
+    /**
+     * Callback function that handles the success response for fetching source types.
+     * @param {string | XMLDocument} data - The data received from the server, either as a string or an XML document.
+     */
     getSourceTypesSuccess(data) {
         console.log("getSourceTypesSuccess called");
         console.log("Received data:", data);
@@ -56,6 +60,10 @@ class ModifyCtrl {
         }
     }
 
+    /**
+     * Callback function that handles the success response for fetching armor set details.
+     * @param {string | XMLDocument} data - The data received from the server, either as a string or an XML document.
+     */
     getAnnoncesSuccess(data) {
         console.log("getAnnoncesSuccess called");
         console.log("Received data:", data);
@@ -195,6 +203,10 @@ class ModifyCtrl {
         }
     }
 
+    /**
+     * Callback function that handles the success response after updating an armor set.
+     * @param {string | XMLDocument} response - The response data received from the server.
+     */
     updateSetSuccess(response) {
         const successElement = $(response).find('success').text();
         
@@ -218,6 +230,10 @@ class ModifyCtrl {
         }
     }
 
+    /**
+     * Handles the success response for deleting an armor set.
+     * @param {XMLDocument|string} response - The server's response to the delete request, either as an XML document or string.
+     */
     deleteSetSuccess(response) {
         console.log("Received data:", response);
 
@@ -235,7 +251,7 @@ class ModifyCtrl {
     
         console.log("Success:", successElement);
         console.log("Message:", messageElement);
-    console.log("Success Element:", successElement); // Check what the value of <success> is
+        console.log("Success Element:", successElement); // Check what the value of <success> is
         
         if (successElement === "true") {
             Toastify({
@@ -257,11 +273,15 @@ class ModifyCtrl {
         }
     }
 
+    /**
+     * Collects form data and returns it as FormData object.
+     * @returns {FormData} formData - The FormData object containing the collected form data.
+     */
     collectFormData() {
-        const formData = new FormData();
+        const formData = new FormData();  // Create FormData object
     
         // Collect data from form inputs
-        formData.append("armorName", $("#armorName").val());  // Replace with actual input field ID
+        formData.append("armorName", $("#armorName").val());
         formData.append("armorCapName", $("#armorCapName").val());
         formData.append("armorCapSourceType", $("#armorCapSourceType").val());
         formData.append("armorCapSource", $("#armorCapSource").val());
@@ -279,9 +299,16 @@ class ModifyCtrl {
         if (fileInput && fileInput.files[0]) {
             formData.append("armorImage", fileInput.files[0]);
         }
+        
         return formData;
     }
-
+    
+    /**
+     * Handles errors during the HTTP request process.
+     * @param {Object} request - The request object that caused the error.
+     * @param {string} status - The status of the request.
+     * @param {string} error - The error message or details.
+     */
     callbackError(request, status, error) {
         Toastify({
             text: "Error: " + error,
@@ -292,6 +319,9 @@ class ModifyCtrl {
         }).showToast();
     }
 
+    /**
+     * Resets the form fields to their default values.
+     */
     resetForm() {
         // Reset form fields
         $("#armorName").val("");
@@ -351,25 +381,43 @@ $(document).ready(function () {
     });
 
     $("#saveButton").on("click", function () {
-        const data = window.ctrl.collectFormData();         
+        // Collect form data through your existing method
+        const formData = window.ctrl.collectFormData(); 
+        // Get values from localStorage
         const selectedArmorId = localStorage.getItem('selectedArmorId');
-        const idSet = localStorage.getItem('selectedArmorId');
         const idCapSource = localStorage.getItem('capSourceId'); 
         const idTunicSource = localStorage.getItem('tunicSourceId'); 
         const idTrousersSource = localStorage.getItem('trousersSourceId');
-
-        if (selectedArmorId && idSet && idCapSource && idTunicSource && idTrousersSource) {
-            data.selectedArmorId = idSet; 
-            data.idCapSource = idCapSource; 
-            data.idTunicSource = idTunicSource; 
-            data.idTrousersSource = idTrousersSource; 
+        
+        console.log("Data to be sent BEFORE id:", formData);
+    
+        // Check if required data is present
+        if (selectedArmorId && idCapSource && idTunicSource && idTrousersSource) {
+            // Prepare the variables for the updateSet function
+            const armorName = formData.get("armorName");
+            const armorCapName = formData.get("armorCapName");
+            const armorCapSourceType = formData.get("armorCapSourceType");
+            const armorCapSource = formData.get("armorCapSource");
+            const armorTunicName = formData.get("armorTunicName");
+            const armorTunicSourceType = formData.get("armorTunicSourceType");
+            const armorTunicSource = formData.get("armorTunicSource");
+            const armorTrousersName = formData.get("armorTrousersName");
+            const armorTrousersSourceType = formData.get("armorTrousersSourceType");
+            const armorTrousersSource = formData.get("armorTrousersSource");
+            const armorEffect = formData.get("armorEffect");
+            const armorDescription = formData.get("armorDescription");
+    
+            // Now, call the updateSet function with the extracted data
+            window.ctrl.http.updateSet(
+                armorName, armorCapName, armorCapSourceType, armorCapSource,
+                armorTunicName, armorTunicSourceType, armorTunicSource,
+                armorTrousersName, armorTrousersSourceType, armorTrousersSource,
+                armorEffect, armorDescription, selectedArmorId, idCapSource,
+                idTunicSource, idTrousersSource, window.ctrl.updateSetSuccess, window.ctrl.callbackError
+            );
         } else {
             console.error("Not all variables are found in localStorage");
         }
-
-        console.log("Data to be sent:", data);
-
-        window.ctrl.http.updateSet(data, window.ctrl.updateSetSuccess, window.ctrl.callbackError);
     });
 
     $("#deleteButton").on("click", function () {
