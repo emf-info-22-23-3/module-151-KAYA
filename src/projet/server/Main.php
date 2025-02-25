@@ -121,7 +121,6 @@ function sendXMLResponse($success, $message = '', $data = null) {
  */
 function sendXMLResponseLogin($success, $message = '', $data = null) {
     // Set the content type to XML for the response
-    header('Content-Type: text/xml');
     echo "<?xml version='1.0' encoding='UTF-8'?>\n";
     echo "<response>\n";
     // Output the success status
@@ -185,18 +184,23 @@ function logout() {
 $userManager = new UserManager();
 $articleManager = new ArticleManager();
 
+function sanitizePostData($data) {
+    return htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
+}
+
 // Handle different HTTP methods (POST in this case)
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'POST':
         // Get the action from the POST data, defaulting to an empty string if not set
-        $action = $_POST['action'] ?? '';
+        $action = sanitizePostData($_POST['action'] ?? '');
         
         // Switch based on the action received in the POST data
         switch($action) {
             case 'login':
                 // Collect login credentials
-                $email = $_POST['email'] ?? '';
-                $password = password_hash($_POST['password'] ?? '');
+                $email = sanitizePostData( $_POST['email'] ?? '');
+                $password = sanitizePostData(($_POST['password'] ?? ''));
+
                 
                 // Check if the credentials match a user
                 $user = $userManager->checkCredentials($email, $password);
@@ -234,20 +238,30 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 }
 
                 // Collect armor set data from POST
-                $armorName = $_POST['armorName'] ?? '';
-                $armorCapName = $_POST['armorCapName'] ?? '';
-                $armorTunicName = $_POST['armorTunicName'] ?? '';
-                $armorTrousersName = $_POST['armorTrousersName'] ?? '';
-                $armorEffect = $_POST['armorEffect'] ?? '';
-                $armorDescription = $_POST['armorDescription'] ?? '';
+                $armorName = sanitizePostData($_POST['armorName'] ?? '');
+                $armorCapName = sanitizePostData($_POST['armorCapName'] ?? '');
+                $armorTunicName = sanitizePostData($_POST['armorTunicName'] ?? '');
+                $armorTrousersName = sanitizePostData($_POST['armorTrousersName'] ?? '');
+                $armorEffect = sanitizePostData($_POST['armorEffect'] ?? '');
+                $armorDescription = sanitizePostData($_POST['armorDescription'] ?? '');
 
                 // Collect source data for armor pieces
-                $armorCapSourceType = $_POST['armorCapSourceType'] ?? '';
-                $armorCapSource = $_POST['armorCapSource'] ?? '';
-                $armorTunicSourceType = $_POST['armorTunicSourceType'] ?? '';
-                $armorTunicSource = $_POST['armorTunicSource'] ?? '';
-                $armorTrousersSourceType = $_POST['armorTrousersSourceType'] ?? '';
-                $armorTrousersSource = $_POST['armorTrousersSource'] ?? '';
+                $armorCapSourceType = sanitizePostData($_POST['armorCapSourceType'] ?? '');
+                $armorCapSource = sanitizePostData($_POST['armorCapSource'] ?? '');
+                $armorTunicSourceType = sanitizePostData($_POST['armorTunicSourceType'] ?? '');
+                $armorTunicSource = sanitizePostData($_POST['armorTunicSource'] ?? '');
+                $armorTrousersSourceType = sanitizePostData($_POST['armorTrousersSourceType'] ?? '');
+                $armorTrousersSource = sanitizePostData($_POST['armorTrousersSource'] ?? '');
+
+                // Check if any required field is empty or null
+                if (empty($armorName) || empty($armorCapName) || empty($armorTunicName) || 
+                    empty($armorTrousersName) || empty($armorEffect) || empty($armorDescription) || 
+                    empty($armorCapSource) || empty($armorTunicSource) || empty($armorTrousersSource) ||
+                    empty($armorCapSourceType) || empty($armorTunicSourceType) || empty($armorTrousersSourceType)) {
+
+                    sendXMLResponse(false, 'Missing required fields');
+                    break;
+                }
             
                 // Handle the uploaded image, if it exists
                 if (isset($_FILES['armorImage']) && $_FILES['armorImage']['error'] === UPLOAD_ERR_OK) {
@@ -444,25 +458,37 @@ switch ($_SERVER['REQUEST_METHOD']) {
         }
 
         // Extract values from the parsed XML for armor set details
-        $armorName = (string) $xml->armorName;
-        $armorCapName = (string) $xml->armorCapName;
-        $armorTunicName = (string) $xml->armorTunicName;
-        $armorTrousersName = (string) $xml->armorTrousersName;
-        $armorEffect = (string) $xml->armorEffect;
-        $armorDescription = (string) $xml->armorDescription;
-        $armorCapSourceType = (string) $xml->armorCapSourceType;
-        $armorCapSource = (string) $xml->armorCapSource;
-        $armorTunicSourceType = (string) $xml->armorTunicSourceType;
-        $armorTunicSource = (string) $xml->armorTunicSource;
-        $armorTrousersSourceType = (string) $xml->armorTrousersSourceType;
-        $armorTrousersSource = (string) $xml->armorTrousersSource;
+        // Sanitize values extracted from the XML for display in HTML contexts
+        $armorName = sanitizePostData((string) $xml->armorName);
+        $armorCapName = sanitizePostData((string) $xml->armorCapName);
+        $armorTunicName = sanitizePostData((string) $xml->armorTunicName);
+        $armorTrousersName = sanitizePostData((string) $xml->armorTrousersName);
+        $armorEffect = sanitizePostData((string) $xml->armorEffect);
+        $armorDescription = sanitizePostData((string) $xml->armorDescription);
+        $armorCapSourceType = sanitizePostData((string) $xml->armorCapSourceType);
+        $armorCapSource = sanitizePostData((string) $xml->armorCapSource);
+        $armorTunicSourceType = sanitizePostData((string) $xml->armorTunicSourceType);
+        $armorTunicSource = sanitizePostData((string) $xml->armorTunicSource);
+        $armorTrousersSourceType = sanitizePostData((string) $xml->armorTrousersSourceType);
+        $armorTrousersSource = sanitizePostData((string) $xml->armorTrousersSource);
 
-        // Extract source IDs and the selected armor ID
-        $idCapSource = (string) $xml->idCapSource;
-        $idTunicSource = (string) $xml->idTunicSource;
-        $idTrousersSource = (string) $xml->idTrousersSource;
-        $selectedArmorId = (string) $xml->selectedArmorId;    
+        // Sanitize source IDs (if they should be integers, for example)
+        $idCapSource = sanitizePostData((string) $xml->idCapSource);
+        $idTunicSource = sanitizePostData((string) $xml->idTunicSource);
+        $idTrousersSource = sanitizePostData((string) $xml->idTrousersSource);
+        $selectedArmorId = sanitizePostData((string) $xml->selectedArmorId);
 
+        // Check if any required field is empty or null
+        if (empty($armorName) || empty($armorCapName) || empty($armorTunicName) || 
+            empty($armorTrousersName) || empty($armorEffect) || empty($armorDescription) || 
+            empty($armorCapSource) || empty($armorTunicSource) || empty($armorTrousersSource) ||
+            empty($armorCapSourceType) || empty($armorTunicSourceType) || empty($armorTrousersSourceType) ||
+            empty($idCapSource) || empty($idTunicSource) || empty($idTrousersSource) || empty($selectedArmorId)) {
+
+            sendXMLResponse(false, 'Missing required fields in XML');
+            break;
+        }
+ 
         // Handle the uploaded image if present
         $imagePath = isset($_FILES['armorImage']) && $_FILES['armorImage']['error'] === UPLOAD_ERR_OK 
             ? 'uploads/' . $_FILES['armorImage']['name'] 
@@ -519,11 +545,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
             break;
         }
 
-        // Extract values needed for deletion
-        $idSet = (string) ($xml->idSet ?? '');
-        $idCapSource = (string) ($xml->idCapSource ?? '');
-        $idTunicSource = (string) ($xml->idTunicSource ?? '');
-        $idTrousersSource = (string) ($xml->idTrousersSource ?? '');
+        $idCapSource = sanitizePostData((string) $xml->idCapSource);
+        $idTunicSource = sanitizePostData((string) $xml->idTunicSource);
+        $idTrousersSource = sanitizePostData((string) $xml->idTrousersSource);
+        $selectedArmorId = sanitizePostData((string) $xml->selectedArmorId);
 
         // Check if any required parameters are missing
         if (empty($idSet) || empty($idCapSource) || empty($idTunicSource) || empty($idTrousersSource)) {

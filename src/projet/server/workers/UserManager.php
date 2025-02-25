@@ -22,12 +22,17 @@ class UserManager
      */
     public function checkCredentials($email, $password) 
     {
+        // Fetch the user from the database using the email
         $user = $this->dbManager->checkLogin($email);
+
         if ($user) {
-            if ($password === password_hash($user->getPassword(), PASSWORD_DEFAULT)) {
-                return $user;
+            // Use password_verify to compare the entered password (plaintext) with the stored hash
+            if (password_verify($password, $user->getPassword())) {
+            return $user;  // Password is valid
             }
         }
-        return false;
+
+        return false;  // Invalid credentials
     }
+
 }

@@ -380,9 +380,10 @@ $(document).ready(function () {
         window.ctrl.resetForm();
     });
 
-    $("#saveButton").on("click", function () {
+    $("#saveButton").on("click", function (event) {
         // Collect form data through your existing method
         const formData = window.ctrl.collectFormData(); 
+        
         // Get values from localStorage
         const selectedArmorId = localStorage.getItem('selectedArmorId');
         const idCapSource = localStorage.getItem('capSourceId'); 
@@ -391,7 +392,37 @@ $(document).ready(function () {
         
         console.log("Data to be sent BEFORE id:", formData);
     
-        // Check if required data is present
+        // Validate required fields (similar to the previous approach)
+        const requiredFields = [
+            "#armorName", "#armorCapName", "#armorCapSource", 
+            "#armorTunicName", "#armorTunicSource", "#armorTrousersName",
+            "#armorTrousersSource", "#armorEffect", "#armorDescription"
+        ];
+    
+        let isValid = true;
+        requiredFields.forEach(function (field) {
+            if ($(field).val().trim() === "") {
+                isValid = false;
+                $(field).css("border", "2px solid red"); // Visual warning (red border)
+            } else {
+                $(field).css("border", "1px solid #ccc"); // Reset border color if valid
+            }
+        });
+    
+        // If any field is empty, stop form submission and show toast message
+        if (!isValid) {
+            event.preventDefault();  // Prevent the form from submitting
+            Toastify({
+                text: "Please fill out all required fields!",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "red"
+            }).showToast();
+            return;  // Stop further processing
+        }
+    
+        // Check if required data is present in localStorage
         if (selectedArmorId && idCapSource && idTunicSource && idTrousersSource) {
             // Prepare the variables for the updateSet function
             const armorName = formData.get("armorName");
@@ -416,9 +447,17 @@ $(document).ready(function () {
                 idTunicSource, idTrousersSource, window.ctrl.updateSetSuccess, window.ctrl.callbackError
             );
         } else {
-            console.error("Not all variables are found in localStorage");
+            // If required data is missing in localStorage, show an error
+            Toastify({
+                text: "Required data is missing in localStorage. Please try again.",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "red"
+            }).showToast();
         }
     });
+    
 
     $("#deleteButton").on("click", function () {
         const idSet = localStorage.getItem('selectedArmorId') || '';
@@ -441,5 +480,12 @@ $(document).ready(function () {
             window.ctrl.deleteSetSuccess(),
             window.ctrl.callbackError
         );
+    });
+
+    $("#disconnectButton").on("click", function () {
+        console.log("Add button clicked, navigating to login.html");
+        window.ctrl.http.disconnect(window.ctrl.disconnectSuccess, window.ctrl.callbackError);
+        $('#userType').text("Visitor"); 
+        localStorage.removeItem("email");
     });
 });

@@ -18,8 +18,20 @@ class IndexCtrl {
      */
     connectSuccess(data, text, jqXHR) {
         console.log("connectSuccess called");
+   
+        if (typeof data === "string") {
+            console.log("Data is a string, attempting to parse...");
+            data = $.parseXML(data);  // Convert string to XML document
+        }
+
+        const $xml = $(data);  // jQuery-wrapped XML document
+
+        // Extract relevant elements from the XML document
+        const reponse = $xml.find("response ");
+        const email = $(reponse).find("email").text(); 
+   
         if ($(data).find("success").text() === 'true') {
-            console.log($(data));
+            console.log("Login Success!");
             Toastify({
                 text: "Login successful",
                 duration: 3000,
@@ -27,15 +39,23 @@ class IndexCtrl {
                 position: "right",
                 backgroundColor: "#33cc33"
             }).showToast();
+            // On the login success page:
 
+            localStorage.setItem('email', email);
+   
             // Redirect based on user role (admin or client)
             if ($(data).find("isAdmin").text() === 'true') {
-                window.location.href = "views/admin.html";
+                setTimeout(function() {
+                    window.location.href = "views/admin.html";
+                }, 10000);  // Delay for 100ms
             } else {
-                window.location.href = "views/client.html";
+                setTimeout(function() {
+                    window.location.href = "views/client.html";
+                }, 10000);  // Delay for 100ms
             }
+   
         } else {
-            console.log($(data));
+            console.log("Login Failed:", $(data));
             Toastify({
                 text: "Login failed. Incorrect email or password.",
                 duration: 3000,
@@ -45,6 +65,7 @@ class IndexCtrl {
             }).showToast();
         }
     }
+   
 
     /**
      * Success callback for fetching armor names from the server.
@@ -374,8 +395,19 @@ class IndexCtrl {
 }
 // Start method called after page load
 $(document).ready(function () {
+    $('#userEmail').text('Visitor');
+
+
     // Initialize the controller object
     window.ctrl = new IndexCtrl();
+
+    // On the redirected page:
+    const email = localStorage.getItem('email');
+    if(email){
+        $('#userType').text(email); 
+    } else {
+        $('#userType').text("Visitor"); 
+    }
 
     /**
      * Handles the login form submission.
@@ -415,8 +447,10 @@ $(document).ready(function () {
      * Handles the click event on the "disconnect" button, navigating the user to the login.html page.
      */
     $("#disconnectButton").on("click", function () {
-        console.log("Add button clicked, navigating to add.html");
+        console.log("Add button clicked, navigating to login.html");
         window.ctrl.http.disconnect(window.ctrl.disconnectSuccess, window.ctrl.callbackError);
+        $('#userType').text("Visitor"); 
+        localStorage.removeItem("email");
     });
 
     /**

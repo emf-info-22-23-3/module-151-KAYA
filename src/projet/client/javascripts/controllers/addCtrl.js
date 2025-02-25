@@ -94,8 +94,48 @@ $(document).ready(function () {
      * Event handler for the save button click.
      * It collects form data and calls the addSet method to send the data.
      */
-    $("#saveButton").on("click", function () {
-        const data = window.ctrl.collectFormData();  // Collect the form data
-        window.ctrl.http.addSet(data, window.ctrl.addSetSuccess, window.ctrl.callbackError);  // Send data to addSet
+    $("#saveButton").on("click", function (event) {
+        // Collect form data first
+        const data = window.ctrl.collectFormData();
+
+        // Validate required fields
+        const requiredFields = [
+            "#armorName", "#armorCapName", "#armorCapSource", 
+            "#armorTunicName", "#armorTunicSource", "#armorTrousersName",
+            "#armorTrousersSource", "#armorEffect", "#armorDescription"
+        ];
+
+        let isValid = true;
+        requiredFields.forEach(function (field) {
+            if ($(field).val().trim() === "") {
+                isValid = false;
+                $(field).css("border", "2px solid red"); // Visual warning (red border)
+            } else {
+                $(field).css("border", "1px solid #ccc"); // Reset border color if valid
+            }
+        });
+
+        // If any field is empty, stop form submission and show toast message
+        if (!isValid) {
+            event.preventDefault();  // Prevent the form from submitting
+            Toastify({
+                text: "Please fill out all required fields!",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "red"
+            }).showToast();
+            return;  // Stop further processing
+        }
+
+        // If the form is valid, call the function to add the set
+        window.ctrl.http.addSet(data, window.ctrl.addSetSuccess, window.ctrl.callbackError);
+    });
+
+    $("#disconnectButton").on("click", function () {
+        console.log("Add button clicked, navigating to login.html");
+        window.ctrl.http.disconnect(window.ctrl.disconnectSuccess, window.ctrl.callbackError);
+        $('#userType').text("Visitor"); 
+        localStorage.removeItem("email");
     });
 });
