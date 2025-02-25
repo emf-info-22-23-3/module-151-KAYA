@@ -24,7 +24,7 @@ class UserManager
     {
         $user = $this->dbManager->checkLogin($email);
         if ($user) {
-            if ($password === $user->getPassword()) {
+            if ($password === password_hash($user->getPassword(), PASSWORD_DEFAULT)) {
                 return $user;
             }
         }

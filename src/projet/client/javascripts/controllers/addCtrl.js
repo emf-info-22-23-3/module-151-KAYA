@@ -1,61 +1,14 @@
 class AddCtrl {
     constructor() {
         this.http = new servicesHttp();
-        this.callbackError = this.callbackError.bind(this);
-        this.getSourceTypesSuccess = this.getSourceTypesSuccess.bind(this);
-        this.collectFormData = this.collectFormData.bind(this);
+        this.callbackError = this.callbackError.bind(this); // Binding callbackError method to 'this' context
+        this.collectFormData = this.collectFormData.bind(this); // Binding collectFormData method to 'this' context
     }
 
-    getSourceTypesSuccess(data) {
-        console.log("getSourceTypesSuccess called");
-        console.log("Received data:", data);
-    
-        // Check if data is a string and parse it if necessary
-        if (typeof data === "string") {
-            console.log("Data is a string, attempting to parse...");
-            data = $.parseXML(data);  // Convert string to XML document
-        }
-    
-        const $xml = $(data);  // jQuery-wrapped XML document
-    
-        // Log the entire parsed XML structure
-        //console.log("Parsed XML:", $xml);
-    
-        // Find the deepest sourceTypes (those that contain pk_type_source and type)
-        const sourceTypes = $xml.find("response sourceTypes sourceTypes sourceType");
-    
-        console.log("Found source types:", sourceTypes.length);
-    
-        if (sourceTypes.length > 0) {
-            sourceTypes.each(function() {
-                const value = $(this).find("pk_type_source").text();  // Get pk_type_source
-                const label = $(this).find("type").text();  // Get type (label)
-    
-                console.log("Found source type:", label);
-    
-                // Populate each of the source type selects
-                $("#armorCapSourceType").append(`<option value="${value}">${label}</option>`);
-                $("#armorTunicSourceType").append(`<option value="${value}">${label}</option>`);
-                $("#armorTrousersSourceType").append(`<option value="${value}">${label}</option>`);
-            });
-            Toastify({
-                text: "Source types loaded successfully",
-                duration: 3000,
-                gravity: "top",
-                position: "right",
-                backgroundColor: "#33cc33"
-            }).showToast();
-        } else {
-            Toastify({
-                text: "No source types found",
-                duration: 3000,
-                gravity: "top",
-                position: "right",
-                backgroundColor: "#ff3333"
-            }).showToast();
-        }
-    }
-
+    /**
+     * Success callback function for adding a new armor set.
+     * @param {XMLDocument | string} response - The response from the server indicating the result of the operation.
+     */
     addSetSuccess(response) {
         const successElement = $(response).find('success').text();
         
@@ -80,6 +33,10 @@ class AddCtrl {
         }
     }
 
+    /**
+     * Collects the form data and prepares it for submission.
+     * @returns {FormData} formData - The collected form data as a FormData object.
+     */
     collectFormData() {
         const formData = new FormData();
     
@@ -107,6 +64,12 @@ class AddCtrl {
     }
     
 
+    /**
+     * Error callback function for HTTP requests.
+     * @param {jqXHR} request - The jqXHR object representing the HTTP request.
+     * @param {string} status - The status of the HTTP request.
+     * @param {string} error - The error message, if any.
+     */
     callbackError(request, status, error) {
         Toastify({
             text: "Error: " + error,
@@ -120,23 +83,19 @@ class AddCtrl {
 }
 
 $(document).ready(function () {
-    window.ctrl = new AddCtrl();
-
-    if ($("#armorCapSourceType").length) {
-        console.log("Loading source types");
-        window.ctrl.http.getSourceTypes(window.ctrl.getSourceTypesSuccess, window.ctrl.callbackError);
-    }
+    window.ctrl = new AddCtrl();  // Initialize the AddCtrl object
 
     $("#cancelButton").on("click", function () {
         console.log("Cancel button clicked, navigating to admin.html");
-        window.location.href = "../views/admin.html"; 
+        window.location.href = "../views/admin.html";  // Navigate to the admin page
     });
 
+    /**
+     * Event handler for the save button click.
+     * It collects form data and calls the addSet method to send the data.
+     */
     $("#saveButton").on("click", function () {
-        const data = window.ctrl.collectFormData();
-        window.ctrl.http.addSet(data, window.ctrl.addSetSuccess, window.ctrl.callbackError);
-        
-        //console.log("save button clicked, navigating to admin.html");
-        //window.location.href = "../views/admin.html"; 
+        const data = window.ctrl.collectFormData();  // Collect the form data
+        window.ctrl.http.addSet(data, window.ctrl.addSetSuccess, window.ctrl.callbackError);  // Send data to addSet
     });
 });
