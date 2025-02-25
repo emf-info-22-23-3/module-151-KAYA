@@ -47,24 +47,6 @@ class IndexCtrl {
     }
 
     /**
-     * Success callback for handling successful logout response.
-     * @param {XMLDocument} data - The XML response data.
-     * @param {string} text - The text status of the response.
-     * @param {jqXHR} jqXHR - The jqXHR object for the request.
-     */
-    disconnectSuccess(data, text, jqXHR) {
-        Toastify({
-            text: "User disconnected",
-            duration: 3000,
-            gravity: "top",
-            position: "right",
-            backgroundColor: "#33cc33"
-        }).showToast();
-
-        window.location.href = "../login.html";  // Redirect to login page after disconnect
-    }
-
-    /**
      * Success callback for fetching armor names from the server.
      * @param {XMLDocument} data - The XML response containing armor names.
      * @param {string} text - The text status of the response.
@@ -342,7 +324,36 @@ class IndexCtrl {
         }
 
         return formData;
+    }
+
+    /**
+     * Success callback for handling successful logout response.
+     * @param {XMLDocument} response - The XML response data.
+     */
+    disconnectSuccess(response) {
+        const successElement = $(response).find('success').text();
+
+        if (successElement === "true") {
+            // Show success toast notification for successful operation
+            Toastify({
+                text: "Disconnected successfully!",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "green"
+            }).showToast();
+            window.location.href = "../login.html";
+        } else {
+            // Show error toast for failure
+            Toastify({
+                text: "Failed to disconnect. Please try again.",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "red"
+            }).showToast();
         }
+    }
 
     /**
      * Callback function to handle errors during an HTTP request.
@@ -398,6 +409,14 @@ $(document).ready(function () {
     $("#addButton").on("click", function () {
         console.log("Add button clicked, navigating to add.html");
         window.location.href = "../views/add.html";
+    });
+
+    /**
+     * Handles the click event on the "disconnect" button, navigating the user to the login.html page.
+     */
+    $("#disconnectButton").on("click", function () {
+        console.log("Add button clicked, navigating to add.html");
+        window.ctrl.http.disconnect(window.ctrl.disconnectSuccess, window.ctrl.callbackError);
     });
 
     /**

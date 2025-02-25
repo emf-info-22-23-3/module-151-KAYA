@@ -184,6 +184,7 @@ function logout() {
 // Initialize managers for user and articles
 $userManager = new UserManager();
 $articleManager = new ArticleManager();
+
 // Handle different HTTP methods (POST in this case)
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'POST':
@@ -195,7 +196,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             case 'login':
                 // Collect login credentials
                 $email = $_POST['email'] ?? '';
-                $password = $_POST['password'] ?? '';
+                $password = password_hash($_POST['password'] ?? '');
                 
                 // Check if the credentials match a user
                 $user = $userManager->checkCredentials($email, $password);
@@ -216,7 +217,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             case 'disconnect':
                 // Log out the user by calling the logout function
                 logout();
-                sendXMLResponseLogout(true, 'Logout successful');
+                sendXMLResponse(true, 'Logout successful');
                 break;
 
             case 'addSet':
