@@ -11,7 +11,10 @@ class AddCtrl {
      */
     addSetSuccess(response) {
         const successElement = $(response).find('success').text();
-        
+        const messageElement = $(response).find('message').text();
+
+        console.log(messageElement);
+
         if (successElement === "true") {
             Toastify({
                 text: "Armor set added successfully!",
@@ -24,7 +27,7 @@ class AddCtrl {
             document.getElementById('addArmorForm').reset();
         } else {
             Toastify({
-                text: "Failed to add armor set. Please try again.",
+                text: messageElement,
                 duration: 3000,
                 gravity: "top",
                 position: "right",
@@ -62,7 +65,6 @@ class AddCtrl {
     
         return formData;
     }
-    
 
     /**
      * Error callback function for HTTP requests.
@@ -79,7 +81,6 @@ class AddCtrl {
             backgroundColor: "#ff3333"
         }).showToast();
     }
-    
 }
 
 $(document).ready(function () {
@@ -130,12 +131,5 @@ $(document).ready(function () {
 
         // If the form is valid, call the function to add the set
         window.ctrl.http.addSet(data, window.ctrl.addSetSuccess, window.ctrl.callbackError);
-    });
-
-    $("#disconnectButton").on("click", function () {
-        console.log("Add button clicked, navigating to login.html");
-        window.ctrl.http.disconnect(window.ctrl.disconnectSuccess, window.ctrl.callbackError);
-        $('#userType').text("Visitor"); 
-        localStorage.removeItem("email");
     });
 });

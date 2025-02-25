@@ -47,11 +47,11 @@ class IndexCtrl {
             if ($(data).find("isAdmin").text() === 'true') {
                 setTimeout(function() {
                     window.location.href = "views/admin.html";
-                }, 10000);  // Delay for 100ms
+                }, 100);  // Delay for 100ms
             } else {
                 setTimeout(function() {
                     window.location.href = "views/client.html";
-                }, 10000);  // Delay for 100ms
+                }, 100);  // Delay for 100ms
             }
    
         } else {

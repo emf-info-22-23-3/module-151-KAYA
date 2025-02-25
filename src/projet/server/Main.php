@@ -545,14 +545,14 @@ switch ($_SERVER['REQUEST_METHOD']) {
             break;
         }
 
-        $idCapSource = sanitizePostData((string) $xml->idCapSource);
-        $idTunicSource = sanitizePostData((string) $xml->idTunicSource);
-        $idTrousersSource = sanitizePostData((string) $xml->idTrousersSource);
-        $selectedArmorId = sanitizePostData((string) $xml->selectedArmorId);
+        $idCapSource = (string) $xml->idCapSource;
+        $idTunicSource = (string) $xml->idTunicSource;
+        $idTrousersSource = (string) $xml->idTrousersSource;
+        $selectedArmorId = (string) $xml->selectedArmorId;
 
         // Check if any required parameters are missing
-        if (empty($idSet) || empty($idCapSource) || empty($idTunicSource) || empty($idTrousersSource)) {
-            sendXMLResponse(false, 'Missing required parameters');
+        if (($idSet = 0 ) || ($idCapSource = 0 ) || ($idTunicSource = 0 ) || ($idTrousersSource = 0 )) {
+            sendXMLResponse(false, 'Missing required parameters' . $idCapSource  . $idTunicSource . $selectedArmorId);
             break;
         }
 

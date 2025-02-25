@@ -201,11 +201,12 @@ class servicesHttp {
      */
     deleteSet(idSet, idCapSource, idTunicSource, idTrousersSource, successCallback, errorCallback) {
         // Construct the XML request body
-        let xmlData = `<deleteRequest>
-            <idSet>${idSet}</idSet>
-            <idCapSource>${idCapSource}</idCapSource>
-            <idTunicSource>${idTunicSource}</idTunicSource>
-            <idTrousersSource>${idTrousersSource}</idTrousersSource>
+        let xmlData = `
+            <deleteRequest>
+                <idSet>${idSet}</idSet>
+                <idCapSource>${idCapSource}</idCapSource>
+                <idTunicSource>${idTunicSource}</idTunicSource>
+                <idTrousersSource>${idTrousersSource}</idTrousersSource>
             </deleteRequest>`;
     
         $.ajax({

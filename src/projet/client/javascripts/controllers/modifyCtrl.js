@@ -242,9 +242,14 @@ class ModifyCtrl {
             console.log("Response is a string, attempting to parse...");
             response = $.parseXML(response);  // Convert string to XML document
         }
+
+        console.log("Parsed XML:", $.parseXML(response)); // Check parsed XML structure directly
     
         const $xml = $(response);  // jQuery-wrapped XML document
-    
+
+        console.log("Wrapped XML:", $xml); // Log the jQuery-wrapped XML object
+
+
         // Log the success and message values
         const successElement = $xml.find('success').text();
         const messageElement = $xml.find('message').text();
@@ -480,12 +485,5 @@ $(document).ready(function () {
             window.ctrl.deleteSetSuccess(),
             window.ctrl.callbackError
         );
-    });
-
-    $("#disconnectButton").on("click", function () {
-        console.log("Add button clicked, navigating to login.html");
-        window.ctrl.http.disconnect(window.ctrl.disconnectSuccess, window.ctrl.callbackError);
-        $('#userType').text("Visitor"); 
-        localStorage.removeItem("email");
     });
 });
