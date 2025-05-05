@@ -11,10 +11,7 @@ class AddCtrl {
      */
     addSetSuccess(response) {
         const successElement = $(response).find('success').text();
-        const messageElement = $(response).find('message').text();
-
-        console.log(messageElement);
-
+        
         if (successElement === "true") {
             Toastify({
                 text: "Armor set added successfully!",
@@ -27,7 +24,7 @@ class AddCtrl {
             document.getElementById('addArmorForm').reset();
         } else {
             Toastify({
-                text: messageElement,
+                text: "Failed to add armor set. Please try again.",
                 duration: 3000,
                 gravity: "top",
                 position: "right",
@@ -35,36 +32,51 @@ class AddCtrl {
             }).showToast();
         }
     }
+    
+    // Escape HTML entities function
+ escapeHtmlEntities(str) {
+    return str.replace(/[&<>"']/g, function(match) {
+        const escapeMap = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        };
+        return escapeMap[match];
+    });
+}
 
     /**
      * Collects the form data and prepares it for submission.
      * @returns {FormData} formData - The collected form data as a FormData object.
      */
     collectFormData() {
-        const formData = new FormData();
+    const formData = new FormData();
     
-        // Collect data from form inputs
-        formData.append("armorName", $("#armorName").val());  // Replace with actual input field ID
-        formData.append("armorCapName", $("#armorCapName").val());
-        formData.append("armorCapSourceType", $("#armorCapSourceType").val());
-        formData.append("armorCapSource", $("#armorCapSource").val());
-        formData.append("armorTunicName", $("#armorTunicName").val());
-        formData.append("armorTunicSourceType", $("#armorTunicSourceType").val());
-        formData.append("armorTunicSource", $("#armorTunicSource").val());
-        formData.append("armorTrousersName", $("#armorTrousersName").val());
-        formData.append("armorTrousersSourceType", $("#armorTrousersSourceType").val());
-        formData.append("armorTrousersSource", $("#armorTrousersSource").val());
-        formData.append("armorEffect", $("#armorEffect").val());
-        formData.append("armorDescription", $("#armorDescription").val());
+    // Collect data from form inputs and escape HTML entities
+    formData.append("armorName", this.escapeHtmlEntities($("#armorName").val()));
+    formData.append("armorCapName", this.escapeHtmlEntities($("#armorCapName").val()));
+    formData.append("armorCapSourceType", this.escapeHtmlEntities($("#armorCapSourceType").val()));
+    formData.append("armorCapSource", this.escapeHtmlEntities($("#armorCapSource").val()));
+    formData.append("armorTunicName", this.escapeHtmlEntities($("#armorTunicName").val()));
+    formData.append("armorTunicSourceType", this.escapeHtmlEntities($("#armorTunicSourceType").val()));
+    formData.append("armorTunicSource", this.escapeHtmlEntities($("#armorTunicSource").val()));
+    formData.append("armorTrousersName", this.escapeHtmlEntities($("#armorTrousersName").val()));
+    formData.append("armorTrousersSourceType", this.escapeHtmlEntities($("#armorTrousersSourceType").val()));
+    formData.append("armorTrousersSource", this.escapeHtmlEntities($("#armorTrousersSource").val()));
+    formData.append("armorEffect", this.escapeHtmlEntities($("#armorEffect").val()));
+    formData.append("armorDescription", this.escapeHtmlEntities($("#armorDescription").val()));
     
-        // If there's a file, append it
-        const fileInput = $("#armorImage")[0];
-        if (fileInput && fileInput.files[0]) {
-            formData.append("armorImage", fileInput.files[0]);
-        }
-    
-        return formData;
+    // If there's a file, append it (file input doesn't need HTML entity escaping)
+    const fileInput = $("#armorImage")[0];
+    if (fileInput && fileInput.files[0]) {
+        formData.append("armorImage", fileInput.files[0]);
     }
+
+    return formData;
+}
+    
 
     /**
      * Error callback function for HTTP requests.
@@ -81,6 +93,7 @@ class AddCtrl {
             backgroundColor: "#ff3333"
         }).showToast();
     }
+    
 }
 
 $(document).ready(function () {
@@ -95,41 +108,8 @@ $(document).ready(function () {
      * Event handler for the save button click.
      * It collects form data and calls the addSet method to send the data.
      */
-    $("#saveButton").on("click", function (event) {
-        // Collect form data first
-        const data = window.ctrl.collectFormData();
-
-        // Validate required fields
-        const requiredFields = [
-            "#armorName", "#armorCapName", "#armorCapSource", 
-            "#armorTunicName", "#armorTunicSource", "#armorTrousersName",
-            "#armorTrousersSource", "#armorEffect", "#armorDescription"
-        ];
-
-        let isValid = true;
-        requiredFields.forEach(function (field) {
-            if ($(field).val().trim() === "") {
-                isValid = false;
-                $(field).css("border", "2px solid red"); // Visual warning (red border)
-            } else {
-                $(field).css("border", "1px solid #ccc"); // Reset border color if valid
-            }
-        });
-
-        // If any field is empty, stop form submission and show toast message
-        if (!isValid) {
-            event.preventDefault();  // Prevent the form from submitting
-            Toastify({
-                text: "Please fill out all required fields!",
-                duration: 3000,
-                gravity: "top",
-                position: "right",
-                backgroundColor: "red"
-            }).showToast();
-            return;  // Stop further processing
-        }
-
-        // If the form is valid, call the function to add the set
-        window.ctrl.http.addSet(data, window.ctrl.addSetSuccess, window.ctrl.callbackError);
+    $("#saveButton").on("click", function () {
+        const data = window.ctrl.collectFormData();  // Collect the form data
+        window.ctrl.http.addSet(data, window.ctrl.addSetSuccess, window.ctrl.callbackError);  // Send data to addSet
     });
 });
